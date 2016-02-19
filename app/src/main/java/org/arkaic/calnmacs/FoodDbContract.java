@@ -8,13 +8,13 @@ import android.provider.BaseColumns;
 public final class FoodDbContract {
 
     public static final String DATABASE_NAME = "fooddatabase.db";
-    public static final int VERSION          = 1;
+    public static final int DATABASE_VERSION = 1;
 
     public FoodDbContract() {}
 
     public static abstract class FoodDbColumns implements BaseColumns {
         public static final String TABLE_NAME       = "foods";
-        public static final String COLUMN_NAME_COL1 = "foodName";
+        public static final String COLUMN_NAME_COL1 = "name";
         public static final String COLUMN_NAME_COL2 = "unit";
         public static final String COLUMN_NAME_COL3 = "fat";
         public static final String COLUMN_NAME_COL4 = "carbs";
