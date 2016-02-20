@@ -24,7 +24,7 @@
     <include layout="@layout/content_food_database" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/refreshButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -33,11 +33,19 @@
         android:nestedScrollingEnabled="false" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/closebutton"
+        android:id="@+id/closeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
+        android:layout_gravity="bottom|left"
         android:src="@android:drawable/ic_delete"
+        android:nestedScrollingEnabled="false" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:src="@android:drawable/ic_input_add"
         android:nestedScrollingEnabled="false" />
 
 </android.support.design.widget.CoordinatorLayout>
