@@ -2,7 +2,6 @@ package org.arkaic.calnmacs;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -13,7 +12,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 public class FoodDbHelper extends SQLiteAssetHelper {
 
     public FoodDbHelper(Context c) {
-        super(c, FoodDbContract.DATABASE_NAME, null, FoodDbContract.VERSION);
+        super(c, FoodDbContract.DATABASE_NAME, null, FoodDbContract.DATABASE_VERSION);
     }
 
     @Override
