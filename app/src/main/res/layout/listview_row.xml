@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableRow
+        android:id="@+id/foodRow"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <TextView
+            android:id="@+id/_id"
+            android:layout_weight="0.125"
+            android:text="test1"/>
+        <TextView
+            android:id="@+id/foodName"
+            android:layout_weight="0.125"
+            android:text="test2"/>
+        <TextView
+            android:id="@+id/unit"
+            android:layout_weight="0.125"
+            android:text="test3"/>
+        <TextView
+            android:id="@+id/fat"
+            android:layout_weight="0.125"
+            android:text="test4"/>
+        <TextView
+            android:id="@+id/carbs"
+            android:layout_weight="0.125"
+            android:text="test5"/>
+        <TextView
+            android:id="@+id/protein"
+            android:layout_weight="0.125"
+            android:text="test6"/>
+        <TextView
+            android:id="@+id/cals"
+            android:layout_weight="0.125"
+            android:text="test7"/>
+        <TextView
+            android:id="@+id/proteinCalRatio"
+            android:layout_weight="0.125"
+            android:text="test8"/>
+    </TableRow>
+
+</TableLayout>
