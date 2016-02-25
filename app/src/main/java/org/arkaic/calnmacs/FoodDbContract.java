@@ -14,12 +14,13 @@ public final class FoodDbContract {
 
     public static abstract class FoodDbColumns implements BaseColumns {
         public static final String TABLE_NAME       = "foods";
-        public static final String COLUMN_NAME_COL1 = "foodName";
-        public static final String COLUMN_NAME_COL2 = "unit";
-        public static final String COLUMN_NAME_COL3 = "fat";
-        public static final String COLUMN_NAME_COL4 = "carbs";
-        public static final String COLUMN_NAME_COL5 = "protein";
-        public static final String COLUMN_NAME_COL6 = "cals";
-        public static final String COLUMN_NAME_COL7 = "proteinCalRatio";
+        public static final String COLUMN_NAME_COL1 = "_id";
+        public static final String COLUMN_NAME_COL2 = "foodName";
+        public static final String COLUMN_NAME_COL3 = "unit";
+        public static final String COLUMN_NAME_COL4 = "fat";
+        public static final String COLUMN_NAME_COL5 = "carbs";
+        public static final String COLUMN_NAME_COL6 = "protein";
+        public static final String COLUMN_NAME_COL7 = "cals";
+        public static final String COLUMN_NAME_COL8 = "proteinCalRatio";
     }
 }
