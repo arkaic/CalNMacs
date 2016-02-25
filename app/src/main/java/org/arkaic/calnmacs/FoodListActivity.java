@@ -3,6 +3,7 @@ package org.arkaic.calnmacs;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 //import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -37,24 +38,31 @@ public class FoodListActivity extends ListActivity {
             @Override
             public void onClick(View view) {
                 Cursor c = mDb.rawQuery("SELECT * from foods;", null);
-                String[] fromColumns = {FoodDbColumns.COLUMN_NAME_COL1,
-                                        FoodDbColumns.COLUMN_NAME_COL2,
-                                        FoodDbColumns.COLUMN_NAME_COL3,
-                                        FoodDbColumns.COLUMN_NAME_COL4,
-                                        FoodDbColumns.COLUMN_NAME_COL5,
-                                        FoodDbColumns.COLUMN_NAME_COL6,
-                                        FoodDbColumns.COLUMN_NAME_COL7,
-                                        FoodDbColumns.COLUMN_NAME_COL8};
-                int[] toViews = {android.R.id.text1};
+                String[] fromColumns = {
+                        FoodDbColumns.COLUMN_NAME_COL1,
+                        FoodDbColumns.COLUMN_NAME_COL2,
+                        FoodDbColumns.COLUMN_NAME_COL3,
+                        FoodDbColumns.COLUMN_NAME_COL4,
+                        FoodDbColumns.COLUMN_NAME_COL5,
+                        FoodDbColumns.COLUMN_NAME_COL6,
+                        FoodDbColumns.COLUMN_NAME_COL7,
+                        FoodDbColumns.COLUMN_NAME_COL8
+                };
+                int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
+                                 R.id.cals, R.id.proteinCalRatio};
+
                 mAdapter = new SimpleCursorAdapter(
                     getApplicationContext(),
-                    android.R.layout.simple_list_item_1,
+                    R.layout.listview_row,
                     c,
                     fromColumns,
                     toViews,
                     0
                 );
-                ListView listView = (ListView) findViewById(android.R.id.list);
+
+//                ListView listView = (ListView) findViewById(android.R.id.list);
+                ListView listView = getListView();
+                listView.setBackgroundColor(Color.BLACK);
                 listView.setAdapter(mAdapter);
             }
         });

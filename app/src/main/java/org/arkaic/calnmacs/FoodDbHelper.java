@@ -13,6 +13,7 @@ public class FoodDbHelper extends SQLiteAssetHelper {
 
     public FoodDbHelper(Context c) {
         super(c, FoodDbContract.DATABASE_NAME, null, FoodDbContract.DATABASE_VERSION);
+        setForcedUpgrade();  // Forces db overwrite if database version is incremented in Contract class
     }
 
     @Override

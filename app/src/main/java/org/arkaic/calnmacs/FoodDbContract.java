@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 public final class FoodDbContract {
 
     public static final String DATABASE_NAME = "food.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 4;
 
     public FoodDbContract() {}
 
