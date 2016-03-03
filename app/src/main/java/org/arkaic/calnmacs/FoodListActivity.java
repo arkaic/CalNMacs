@@ -49,11 +49,20 @@ public class FoodListActivity extends ListActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // view is the toplevel object type defined in the table row xml
                 TableRow foodRow = ((TableRow)view.findViewById(R.id.foodRow));
+                CharSequence id_ = ((TextView)foodRow.findViewById(R.id._id)).getText();
                 CharSequence name = ((TextView)foodRow.findViewById(R.id.foodName)).getText();
+                CharSequence unit = ((TextView)foodRow.findViewById(R.id.unit)).getText();
+                CharSequence carbs = ((TextView)foodRow.findViewById(R.id.carbs)).getText();
+                CharSequence fat = ((TextView)foodRow.findViewById(R.id.fat)).getText();
+                CharSequence prot = ((TextView)foodRow.findViewById(R.id.protein)).getText();
+                CharSequence cals = ((TextView)foodRow.findViewById(R.id.cals)).getText();
+                CharSequence protcals = ((TextView)foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
                 AlertDialog alertDialog = new AlertDialog.Builder(FoodListActivity.this).create();
                 alertDialog.setTitle("Chosen food");
-                alertDialog.setMessage(MessageFormat.format("Food: {0}", name));
+                alertDialog.setMessage(MessageFormat.format(
+                        "ID: {0}\nFood: {1}\nunit: {2}\ncarbs: {3}\nfat: {4}\nprotein: {5}\ncalories: {6}\nprotein->cal ratio: {7}",
+                        id_, name, unit, carbs, fat, prot, cals, protcals));
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) { dialog.dismiss(); }
