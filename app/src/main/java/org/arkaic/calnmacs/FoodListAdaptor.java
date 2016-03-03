@@ -13,31 +13,27 @@ import android.widget.SimpleCursorAdapter;
  */
 public class FoodListAdaptor extends SimpleCursorAdapter {
 
+    private Context mContext;
+    private int mLayout;
+
     public FoodListAdaptor(Context context, int layout, Cursor cursor, String[] fromCols, int[] toViews, int flags) {
         super(context, layout, cursor, fromCols, toViews, flags);
+        this.mContext = context;
+        this.mLayout = layout;
     }
-//
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        View v = convertView;
-//
-//        if (v == null) {
-//            LayoutInflater vi;
-//            vi = LayoutInflater.from(parent.getContext());
-//            v = vi.inflate(R.layout.listview_row, null);
-//        }
-//
-//        ClipData.Item item = getItem(position);
-//        return null;
-//    }
 
     @Override
     public View newView(Context ctx, Cursor csr, ViewGroup parent) {
-        return null;
+        Cursor c = getCursor();
+        final LayoutInflater inflater = LayoutInflater.from(ctx);
+        View v = inflater.inflate(mLayout, parent, false);
+
+        // TODO:layout - set text views
+        return v;
     }
 
-    @Override
-    public void bindView(View v, Context ctx, Cursor csr) {
-    }
+//    @Override
+//    public void bindView(View v, Context ctx, Cursor csr) {
+//    }
 }
 
