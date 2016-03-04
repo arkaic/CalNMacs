@@ -11,14 +11,12 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -28,7 +26,7 @@ import static org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
 // TODO: Make database. Display
 
-public class FoodListActivity extends ListActivity {
+public class FoodDbActivity extends ListActivity {
 
     private SQLiteDatabase mDb;
     private SimpleCursorAdapter mAdapter;
@@ -58,7 +56,7 @@ public class FoodListActivity extends ListActivity {
                 CharSequence cals = ((TextView)foodRow.findViewById(R.id.cals)).getText();
                 CharSequence protcals = ((TextView)foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
-                AlertDialog alertDialog = new AlertDialog.Builder(FoodListActivity.this).create();
+                AlertDialog alertDialog = new AlertDialog.Builder(FoodDbActivity.this).create();
                 alertDialog.setTitle("Chosen food");
                 alertDialog.setMessage(MessageFormat.format(
                         "ID: {0}\nFood: {1}\nunit: {2}\ncarbs: {3}\nfat: {4}\nprotein: {5}\ncalories: {6}\nprotein->cal ratio: {7}",
