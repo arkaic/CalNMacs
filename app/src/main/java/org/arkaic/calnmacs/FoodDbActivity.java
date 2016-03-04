@@ -10,6 +10,7 @@ import android.os.Bundle;
 //import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,9 +25,8 @@ import java.text.MessageFormat;
 
 import static org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
-// TODO: Make database. Display
 
-public class FoodDbActivity extends ListActivity {
+public class FoodDbActivity extends FragmentActivity {
 
     private SQLiteDatabase mDb;
     private SimpleCursorAdapter mAdapter;
@@ -56,6 +56,7 @@ public class FoodDbActivity extends ListActivity {
                 CharSequence cals = ((TextView)foodRow.findViewById(R.id.cals)).getText();
                 CharSequence protcals = ((TextView)foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
+                // Bring up message dialog displaying information
                 AlertDialog alertDialog = new AlertDialog.Builder(FoodDbActivity.this).create();
                 alertDialog.setTitle("Chosen food");
                 alertDialog.setMessage(MessageFormat.format(
@@ -78,14 +79,14 @@ public class FoodDbActivity extends ListActivity {
                 Cursor csr = mDb.rawQuery("SELECT * from foods;", null);
 
                 String[] fromColumns = {
-                        FoodDbColumns.COLUMN_NAME_COL1,
-                        FoodDbColumns.COLUMN_NAME_COL2,
-                        FoodDbColumns.COLUMN_NAME_COL3,
-                        FoodDbColumns.COLUMN_NAME_COL4,
-                        FoodDbColumns.COLUMN_NAME_COL5,
-                        FoodDbColumns.COLUMN_NAME_COL6,
-                        FoodDbColumns.COLUMN_NAME_COL7,
-                        FoodDbColumns.COLUMN_NAME_COL8
+                    FoodDbColumns.COLUMN_NAME_COL1,
+                    FoodDbColumns.COLUMN_NAME_COL2,
+                    FoodDbColumns.COLUMN_NAME_COL3,
+                    FoodDbColumns.COLUMN_NAME_COL4,
+                    FoodDbColumns.COLUMN_NAME_COL5,
+                    FoodDbColumns.COLUMN_NAME_COL6,
+                    FoodDbColumns.COLUMN_NAME_COL7,
+                    FoodDbColumns.COLUMN_NAME_COL8
                 };
                 int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                                  R.id.cals, R.id.proteinCalRatio};
@@ -101,8 +102,8 @@ public class FoodDbActivity extends ListActivity {
                 // get and display listview
                 listView.setBackgroundColor(Color.BLACK);
                 listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-//                listView.setAdapter(mAdapter);
-                setListAdapter(mAdapter);
+                listView.setAdapter(mAdapter);
+//                setListAdapter(mAdapter);  //for ListActivity class only
             }
         });
 

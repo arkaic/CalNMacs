@@ -16,13 +16,13 @@ public class FoodDbHelper extends SQLiteAssetHelper {
         setForcedUpgrade();  // Forces db overwrite if database version is incremented in Contract class
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int j) {
-
-    }
-
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-
-    }
+//    @Override
+//    public void onUpgrade(SQLiteDatabase db, int i, int j) {
+//
+//    }
+//
+//    @Override
+//    public void onOpen(SQLiteDatabase db) {
+//
+//    }
 }
