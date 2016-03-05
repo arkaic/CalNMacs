@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
@@ -23,6 +24,7 @@ import java.text.MessageFormat;
 import org.arkaic.calnmacs.dummy.DummyContent.DummyItem;
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -36,10 +38,6 @@ public class FoodDbFragment extends ListFragment {
     private OnFoodDbFragmentInteractionListener mListener;
     private SQLiteDatabase mDb;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public FoodDbFragment() {}
 
     public static FoodDbFragment newInstance(int columnCount) {
@@ -68,9 +66,7 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        // List view click event
-        View v = getView();
-        final ListView listView = (ListView)v.findViewById(android.R.id.list);
+        final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -183,6 +179,6 @@ public class FoodDbFragment extends ListFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFoodDbFragmentInteractionListener {
-        void onFoodDbFragmentInteraction(DummyItem item);
+        void onFoodDbFragmentInteraction(Uri uri);
     }
 }

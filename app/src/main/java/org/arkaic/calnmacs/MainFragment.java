@@ -1,6 +1,7 @@
 package org.arkaic.calnmacs;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -13,20 +14,19 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFragment.OnFragmentInteractionListener} interface
+ * {@link OnMainFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class MainFragment extends ListFragment {
+
     private static final String NUM = "num";
     private int mNum;
+    private OnMainFragmentInteractionListener mListener;
+    private SQLiteDatabase mDb;
 
-    private OnFragmentInteractionListener mListener;
-
-    public MainFragment() {
-        // Required empty public constructor
-    }
+    public MainFragment() {}
 
     public static MainFragment newInstance(int position) {
         MainFragment fragment = new MainFragment();
@@ -41,6 +41,7 @@ public class MainFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
              mNum = getArguments().getInt(NUM);
+        mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
     }
 
     @Override
@@ -48,6 +49,11 @@ public class MainFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+
     }
 
     public void onButtonPressed(Uri uri) {
@@ -59,10 +65,10 @@ public class MainFragment extends ListFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnMainFragmentInteractionListener) {
+            mListener = (OnMainFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + " must implement OnMainFragmentInteractionListener");
         }
     }
 
@@ -82,7 +88,7 @@ public class MainFragment extends ListFragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnMainFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }

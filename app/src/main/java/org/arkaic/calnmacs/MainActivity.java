@@ -1,6 +1,7 @@
 package org.arkaic.calnmacs;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,9 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import org.arkaic.calnmacs.FoodDbFragment.OnFoodDbFragmentInteractionListener;
+import org.arkaic.calnmacs.MainFragment.OnMainFragmentInteractionListener;
 import org.arkaic.calnmacs.dummy.DummyContent;
 
-public class MainActivity extends AppCompatActivity implements OnFoodDbFragmentInteractionListener {
+
+public class MainActivity extends AppCompatActivity
+        implements OnFoodDbFragmentInteractionListener, OnMainFragmentInteractionListener {
+
     static final int DUMMY_NUM_ITEMS = 2;
     private SQLiteDatabase mDb;
 
@@ -48,8 +53,13 @@ public class MainActivity extends AppCompatActivity implements OnFoodDbFragmentI
     }
 
     @Override
-    public void onFoodDbFragmentInteraction(DummyContent.DummyItem item) {
+    public void onFoodDbFragmentInteraction(Uri uri) {
         // TODO implement interaction from fooddb to whatever
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        //
     }
 
 
@@ -68,10 +78,10 @@ public class MainActivity extends AppCompatActivity implements OnFoodDbFragmentI
         public Fragment getItem(int position) {
             // Called when adapter needs a fragment that doesn't exist in the FragmentManager
             switch(position) {
-//                case 0:  return MainFragment.newInstance(position);
+                case 0:  return MainFragment.newInstance(position);
                 case 1:  return FoodDbFragment.newInstance(position);
-                default: return FoodDbFragment.newInstance(position);
-                //TODO uncomment the top and change default to be the same
+                default: return MainFragment.newInstance(position);
+//                default: return FoodDbFragment.newInstance(position);
             }
         }
     }
