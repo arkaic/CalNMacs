@@ -61,22 +61,8 @@ public class FoodDbFragment extends ListFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_fooddb, container, false);
-
-        // TODO RecyclerView happens to be a better version of ListView, so figure this out
-//        if (view instanceof RecyclerView) {
-//            Context context = view.getContext();
-//            RecyclerView recyclerView = (RecyclerView) view;
-//            if (mColumnCount <= 1) {
-//                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//            } else {
-//                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-//            }
-//            recyclerView.setAdapter(new MyFoodDbRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-//        }
-        return view;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_fooddb, container, false);
     }
 
     @Override
@@ -85,7 +71,6 @@ public class FoodDbFragment extends ListFragment {
         // List view click event
         View v = getView();
         final ListView listView = (ListView)v.findViewById(android.R.id.list);
-//        final ListView listView = getListView();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -109,9 +94,7 @@ public class FoodDbFragment extends ListFragment {
                             id_, name, unit, carbs, fat, prot, cals, protcals));
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
+                                public void onClick(DialogInterface dialog, int which) { dialog.dismiss();}
                             });
                     alertDialog.show();
                 }
@@ -151,7 +134,6 @@ public class FoodDbFragment extends ListFragment {
                 listView.setBackgroundColor(Color.BLACK);
                 listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                 listView.setAdapter(adapter);
-//                setListAdapter(mAdapter);  //for ListActivity class only
             }
         });
 

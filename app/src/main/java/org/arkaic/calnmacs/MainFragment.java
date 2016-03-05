@@ -22,10 +22,6 @@ public class MainFragment extends ListFragment {
     private static final String NUM = "num";
     private int mNum;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     public MainFragment() {
