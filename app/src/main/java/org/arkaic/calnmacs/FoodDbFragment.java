@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +23,6 @@ import android.widget.TextView;
 
 import java.text.MessageFormat;
 
-import org.arkaic.calnmacs.dummy.DummyContent.DummyItem;
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
 
@@ -53,6 +54,9 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
         if (getArguments() != null)
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
@@ -119,7 +123,7 @@ public class FoodDbFragment extends ListFragment {
                         R.id.cals, R.id.proteinCalRatio};
                 SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                         getActivity().getApplicationContext(),
-                        R.layout.listview_row,
+                        R.layout.foodrow_fooddb,
                         csr,
                         fromColumns,
                         toViews,
