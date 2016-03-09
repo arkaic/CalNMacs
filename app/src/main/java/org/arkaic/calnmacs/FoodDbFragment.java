@@ -102,7 +102,7 @@ public class FoodDbFragment extends ListFragment {
         });
 
         // button on click
-        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refreshButton);
+        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.clearAll);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,7 +137,7 @@ public class FoodDbFragment extends ListFragment {
             }
         });
 
-        FloatingActionButton closeButton = (FloatingActionButton)getView().findViewById(R.id.closeButton);
+        FloatingActionButton closeButton = (FloatingActionButton)getView().findViewById(R.id.quit);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,7 +145,7 @@ public class FoodDbFragment extends ListFragment {
             }
         });
 
-        FloatingActionButton addButton = (FloatingActionButton) getView().findViewById(R.id.addButton);
+        FloatingActionButton addButton = (FloatingActionButton) getView().findViewById(R.id.add);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

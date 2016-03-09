@@ -29,9 +29,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
         // Database stuff
         FoodDbHelper dbHelper = new FoodDbHelper(getApplicationContext());
         mDb = dbHelper.getWritableDatabase();
@@ -43,12 +40,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFoodDbFragmentInteraction(Uri uri) {
-        // TODO implement interaction from fooddb to whatever
+        // TODO implement interaction of fragment and any needed information passing to this activity
+        // and to any other fragments this activity may need to pass info to.
+        // http://developer.android.com/training/basics/fragments/communicating.html
+        // In fragment's onAttach() call, it will assign reference to this Activity casted as the
+        // interface. Then in fragment.onButtonClick(), it'll handle the button click by calling
+        // the implemented method(s) of the referenced Activity.
+
+        // use cases: deletion or addition of foods into the foodlist
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        //
+    public void onMainFragmentInteraction(Uri uri) {
+        // only needed if calories page needs to tell food list somehting
     }
 
 

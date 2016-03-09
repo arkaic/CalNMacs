@@ -32,7 +32,7 @@
         android:layout_below="@+id/fooddb_toolbar"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/refreshButton"
+        android:id="@+id/clearAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -41,7 +41,7 @@
         android:nestedScrollingEnabled="false" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/closeButton"
+        android:id="@+id/quit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|left"
@@ -50,7 +50,7 @@
         android:nestedScrollingEnabled="false" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addButton"
+        android:id="@+id/add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
