@@ -36,8 +36,10 @@ public class FoodDbFragment extends ListFragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
-    private OnFoodDbFragmentInteractionListener mListener;
+    private SimpleCursorAdapter mAdapter;
+    private Cursor mCursor;
     private SQLiteDatabase mDb;
+    private OnFoodDbFragmentInteractionListener mListener;
 
     public FoodDbFragment() {}
 
@@ -54,7 +56,7 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
         if (getArguments() != null)
@@ -69,21 +71,45 @@ public class FoodDbFragment extends ListFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
+        // make and display adapter
+        mCursor = mDb.rawQuery("SELECT * from foods;", null);
+        String[] fromColumns = {
+                FoodDbColumns.COLUMN_NAME_COL1,
+                FoodDbColumns.COLUMN_NAME_COL2,
+                FoodDbColumns.COLUMN_NAME_COL3,
+                FoodDbColumns.COLUMN_NAME_COL4,
+                FoodDbColumns.COLUMN_NAME_COL5,
+                FoodDbColumns.COLUMN_NAME_COL6,
+                FoodDbColumns.COLUMN_NAME_COL7,
+                FoodDbColumns.COLUMN_NAME_COL8
+        };
+        int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
+                R.id.cals, R.id.proteinCalRatio};
+        mAdapter = new SimpleCursorAdapter(
+                getActivity().getApplicationContext(),
+                R.layout.foodrow_fooddb,
+                mCursor,
+                fromColumns,
+                toViews,
+                0
+        );
+        listView.setBackgroundColor(Color.BLACK);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // view is the toplevel object type defined in the table row xml
-                TableRow foodRow = ((TableRow)view.findViewById(R.id.foodRow));
-                CharSequence id_ = ((TextView)foodRow.findViewById(R.id._id)).getText();
-                CharSequence name = ((TextView)foodRow.findViewById(R.id.foodName)).getText();
-                CharSequence unit = ((TextView)foodRow.findViewById(R.id.unit)).getText();
-                CharSequence carbs = ((TextView)foodRow.findViewById(R.id.carbs)).getText();
-                CharSequence fat = ((TextView)foodRow.findViewById(R.id.fat)).getText();
-                CharSequence prot = ((TextView)foodRow.findViewById(R.id.protein)).getText();
-                CharSequence cals = ((TextView)foodRow.findViewById(R.id.cals)).getText();
-                CharSequence protcals = ((TextView)foodRow.findViewById(R.id.proteinCalRatio)).getText();
+                TableRow foodRow = ((TableRow) view.findViewById(R.id.foodRow));
+                CharSequence id_ = ((TextView) foodRow.findViewById(R.id._id)).getText();
+                CharSequence name = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
+                CharSequence unit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
+                CharSequence carbs = ((TextView) foodRow.findViewById(R.id.carbs)).getText();
+                CharSequence fat = ((TextView) foodRow.findViewById(R.id.fat)).getText();
+                CharSequence prot = ((TextView) foodRow.findViewById(R.id.protein)).getText();
+                CharSequence cals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
+                CharSequence protcals = ((TextView) foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
                 // Bring up message dialog displaying information
                 if (getActivity() != null) {
@@ -94,7 +120,9 @@ public class FoodDbFragment extends ListFragment {
                             id_, name, unit, carbs, fat, prot, cals, protcals));
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) { dialog.dismiss();}
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
                             });
                     alertDialog.show();
                 }
@@ -102,38 +130,38 @@ public class FoodDbFragment extends ListFragment {
         });
 
         // button on click
-        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.clearAll);
+        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // make adaptor
-                Cursor csr = mDb.rawQuery("SELECT * from foods;", null);
+                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods LIMIT 5;", null));
+                mAdapter.notifyDataSetChanged();
 
-                String[] fromColumns = {
-                        FoodDbColumns.COLUMN_NAME_COL1,
-                        FoodDbColumns.COLUMN_NAME_COL2,
-                        FoodDbColumns.COLUMN_NAME_COL3,
-                        FoodDbColumns.COLUMN_NAME_COL4,
-                        FoodDbColumns.COLUMN_NAME_COL5,
-                        FoodDbColumns.COLUMN_NAME_COL6,
-                        FoodDbColumns.COLUMN_NAME_COL7,
-                        FoodDbColumns.COLUMN_NAME_COL8
-                };
-                int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
-                        R.id.cals, R.id.proteinCalRatio};
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                        getActivity().getApplicationContext(),
-                        R.layout.foodrow_fooddb,
-                        csr,
-                        fromColumns,
-                        toViews,
-                        0
-                );
 
-                // get and display listview
-                listView.setBackgroundColor(Color.BLACK);
-                listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-                listView.setAdapter(adapter);
+//                String[] fromColumns = {
+//                        FoodDbColumns.COLUMN_NAME_COL1,
+//                        FoodDbColumns.COLUMN_NAME_COL2,
+//                        FoodDbColumns.COLUMN_NAME_COL3,
+//                        FoodDbColumns.COLUMN_NAME_COL4,
+//                        FoodDbColumns.COLUMN_NAME_COL5,
+//                        FoodDbColumns.COLUMN_NAME_COL6,
+//                        FoodDbColumns.COLUMN_NAME_COL7,
+//                        FoodDbColumns.COLUMN_NAME_COL8
+//                };
+//                int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
+//                                 R.id.cals, R.id.proteinCalRatio};
+//                mAdapter = new SimpleCursorAdapter(
+//                        getActivity().getApplicationContext(),
+//                        R.layout.foodrow_fooddb,
+//                        csr,
+//                        fromColumns,
+//                        toViews,
+//                        0
+//                );
+//                listView.setBackgroundColor(Color.BLACK);
+//                listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//                listView.setAdapter(mAdapter);
             }
         });
 
@@ -170,6 +198,12 @@ public class FoodDbFragment extends ListFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mCursor.close();
     }
 
     /**
