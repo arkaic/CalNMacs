@@ -1,7 +1,11 @@
 package org.arkaic.calnmacs;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -12,6 +16,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+
+import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
 
 /**
@@ -24,17 +39,18 @@ import android.view.ViewGroup;
  */
 public class MainFragment extends ListFragment {
 
-    private static final String NUM = "num";
-    private int mNum;
-    private OnMainFragmentInteractionListener mListener;
+    private ArrayAdapter<String> mAdapter;
+    private SimpleCursorAdapter mSCAdapter;
     private SQLiteDatabase mDb;
+    private OnMainFragmentInteractionListener mListener;
+
+    private ArrayList<String> mFoodsEaten = new ArrayList<>();
 
     public MainFragment() {}
 
     public static MainFragment newInstance(int position) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
-        args.putInt(NUM, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -42,11 +58,8 @@ public class MainFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-
-        if (getArguments() != null)
-             mNum = getArguments().getInt(NUM);
         mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
     }
 
@@ -57,6 +70,31 @@ public class MainFragment extends ListFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        // todo need to subclass arrayadapter to have it output multiple columns
+        // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
+
+        final ListView listView = (ListView)view.findViewById(android.R.id.list);
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mFoodsEaten.add("soy");
+        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFoodsEaten);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(mAdapter);
+
+        // TODO
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            }
+//        });
+
         FloatingActionButton quitButton = (FloatingActionButton)getView().findViewById(R.id.quit);
         quitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +107,13 @@ public class MainFragment extends ListFragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO add a food to list
+                // TODO add a food to list: open a menu/dropdown, load up db food list, choose food,
+                // extrapolate that out of db and add to listview
+
+                // test adding
+                mFoodsEaten.add("Haw Hamburger");
+                mAdapter.notifyDataSetChanged();
+                // TODO add this to adapter or listview directly?// make adaptor
             }
         });
 
@@ -77,7 +121,7 @@ public class MainFragment extends ListFragment {
         clearAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO add a food to list
+                // TODO clear foods from list
             }
         });
     }
