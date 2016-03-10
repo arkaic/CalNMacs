@@ -3,19 +3,14 @@ package org.arkaic.calnmacs;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import org.arkaic.calnmacs.FoodDbFragment.OnFoodDbFragmentInteractionListener;
 import org.arkaic.calnmacs.MainFragment.OnMainFragmentInteractionListener;
-import org.arkaic.calnmacs.dummy.DummyContent;
 
 
 public class MainActivity extends AppCompatActivity
@@ -74,7 +69,6 @@ public class MainActivity extends AppCompatActivity
                 case 0:  return MainFragment.newInstance(position);
                 case 1:  return FoodDbFragment.newInstance(position);
                 default: return MainFragment.newInstance(position);
-//                default: return FoodDbFragment.newInstance(position);
             }
         }
     }
