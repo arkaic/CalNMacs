@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -19,11 +18,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +122,7 @@ public class MainFragment extends ListFragment {
                     Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
                     // TODO query from mdb and populate spinner
                     List<String> spinnerItems = new ArrayList<>();
+                    Cursor foodNameCursor = mDb.rawQuery("SELECT " + FoodDbColumns.FOOD_NAME_COLUMN, null);
                     spinnerItems.add("yes");
                     spinnerItems.add("well um");
                     spinnerItems.add("nah");

@@ -75,14 +75,14 @@ public class FoodDbFragment extends ListFragment {
         // make and display adapter
         mCursor = mDb.rawQuery("SELECT * from foods;", null);
         String[] fromColumns = {
-                FoodDbColumns.COLUMN_NAME_COL1,
-                FoodDbColumns.COLUMN_NAME_COL2,
-                FoodDbColumns.COLUMN_NAME_COL3,
-                FoodDbColumns.COLUMN_NAME_COL4,
-                FoodDbColumns.COLUMN_NAME_COL5,
-                FoodDbColumns.COLUMN_NAME_COL6,
-                FoodDbColumns.COLUMN_NAME_COL7,
-                FoodDbColumns.COLUMN_NAME_COL8
+                FoodDbColumns.ID_COLUMN,
+                FoodDbColumns.FOOD_NAME_COLUMN,
+                FoodDbColumns.UNIT_COLUMN,
+                FoodDbColumns.FAT_COLUMN,
+                FoodDbColumns.CARBS_COLUMN,
+                FoodDbColumns.PROTEIN_COLUMN,
+                FoodDbColumns.CALS_COLUMN,
+                FoodDbColumns.RATIO_COLUMN
         };
         int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                 R.id.cals, R.id.proteinCalRatio};
@@ -137,31 +137,6 @@ public class FoodDbFragment extends ListFragment {
                 // make adaptor
                 mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods LIMIT 5;", null));
                 mAdapter.notifyDataSetChanged();
-
-
-//                String[] fromColumns = {
-//                        FoodDbColumns.COLUMN_NAME_COL1,
-//                        FoodDbColumns.COLUMN_NAME_COL2,
-//                        FoodDbColumns.COLUMN_NAME_COL3,
-//                        FoodDbColumns.COLUMN_NAME_COL4,
-//                        FoodDbColumns.COLUMN_NAME_COL5,
-//                        FoodDbColumns.COLUMN_NAME_COL6,
-//                        FoodDbColumns.COLUMN_NAME_COL7,
-//                        FoodDbColumns.COLUMN_NAME_COL8
-//                };
-//                int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
-//                                 R.id.cals, R.id.proteinCalRatio};
-//                mAdapter = new SimpleCursorAdapter(
-//                        getActivity().getApplicationContext(),
-//                        R.layout.foodrow_fooddb,
-//                        csr,
-//                        fromColumns,
-//                        toViews,
-//                        0
-//                );
-//                listView.setBackgroundColor(Color.BLACK);
-//                listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-//                listView.setAdapter(mAdapter);
             }
         });
 
