@@ -40,11 +40,13 @@ import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 public class MainFragment extends ListFragment {
 
     private ArrayAdapter<String> mAdapter;
-    private SimpleCursorAdapter mSCAdapter;
     private SQLiteDatabase mDb;
     private OnMainFragmentInteractionListener mListener;
-
     private ArrayList<String> mFoodsEaten = new ArrayList<>();
+    private int mTotalCals = 0;
+    private double mTotalFat = 0;
+    private double mTotalCarbs = 0;
+    private double mTotalProtein = 0;
 
     public MainFragment() {}
 
@@ -121,7 +123,12 @@ public class MainFragment extends ListFragment {
         clearAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO clear foods from list
+                mFoodsEaten.clear();
+                mAdapter.notifyDataSetChanged();
+                mTotalCals = 0;
+                mTotalCarbs = 0;
+                mTotalFat = 0;
+                mTotalProtein = 0;
             }
         });
     }
