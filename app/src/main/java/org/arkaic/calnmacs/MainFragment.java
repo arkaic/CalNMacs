@@ -41,6 +41,7 @@ public class MainFragment extends ListFragment {
     private SQLiteDatabase mDb;
     private OnMainFragmentInteractionListener mListener;
     private ArrayList<String> mFoodsEaten = new ArrayList<>();
+    private String mSelectedSpinnerFood = null;
     private int mTotalCals = 0;
     private double mTotalFat = 0;
     private double mTotalCarbs = 0;
@@ -106,55 +107,62 @@ public class MainFragment extends ListFragment {
             }
         });
 
+        /* -----------------------------------------------------------------------------------------
+         *                                     ADD FOOD BUTTON
+         * -----------------------------------------------------------------------------------------
+         */
         FloatingActionButton addButton = (FloatingActionButton)getView().findViewById(R.id.add);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Open a menu/dropdown, load up db food list, choose food,
-                // extrapolate that out of db and add to listview
                 if (getActivity() != null) {
-                    // Create dialog box and spinner for it
+                    // Create dialog box
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                     View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_main, null);
                     dialogBuilder.setView(dialogView);
                     dialogBuilder.setTitle("Add food");
 
-                    Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
-                    // TODO query from mdb and populate spinner
-                    List<String> spinnerItems = new ArrayList<>();
+                    // Populate list with food names and make adapter for spinner
+                    final List<String> spinnerItems = new ArrayList<>();
                     Cursor foodNameCursor = mDb.rawQuery(
                             "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM foods",
                             null);
                     if (foodNameCursor.moveToFirst()) {
-                        do {
-                            spinnerItems.add(foodNameCursor.getString(0));
+                        do { spinnerItems.add(foodNameCursor.getString(0));
                         } while (foodNameCursor.moveToNext());
                     }
-
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                             getActivity(), android.R.layout.simple_spinner_item, spinnerItems);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinner.setAdapter(adapter);
 
+                    // Spinner config
+                    Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
+                    spinner.setAdapter(adapter);
                     spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             //TODO query from db and add to foods
+                            mSelectedSpinnerFood = spinnerItems.get(position);
                         }
 
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
-                            // TODO idk
+                            mSelectedSpinnerFood = spinnerItems.get(0);
+                        }
+                    });
+
+                    // OK button config
+                    dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO query chosen spinner food from db (or some faster method) and add to listview, update numbers
+                            mFoodsEaten.add(mSelectedSpinnerFood);
+                            mAdapter.notifyDataSetChanged();
                         }
                     });
 
                     dialogBuilder.create().show();
                 }
-
-                // test adding
-                mFoodsEaten.add("Haw Hamburger");
-                mAdapter.notifyDataSetChanged();
-                // TODO add this to adapter or listview directly?// make adaptor
             }
         });
 
