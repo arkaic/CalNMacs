@@ -17,9 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -71,7 +73,7 @@ public class MainFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, final Bundle savedInstanceState) {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
 
@@ -82,26 +84,29 @@ public class MainFragment extends ListFragment {
         mFoodsEaten.add("soy");
         mFoodsEaten.add("soy");
         mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFoodsEaten);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(mAdapter);
-
-        // TODO
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            }
-//        });
-
-        FloatingActionButton quitButton = (FloatingActionButton)getView().findViewById(R.id.quit);
-        quitButton.setOnClickListener(new View.OnClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                getActivity().finish();
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                // TODO bring up dialog for edit numbers or delete
+                if (getActivity() != null) {
+                    new AlertDialog.Builder(getActivity())
+                            .setPositiveButton("Change amount", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    // TODO
+                                }
+                            })
+                            .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    // TODO use position
+                                    mFoodsEaten.remove(position);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            })
+                            .show();
+                }
             }
         });
 
@@ -109,8 +114,31 @@ public class MainFragment extends ListFragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO add a food to list: open a menu/dropdown, load up db food list, choose food,
+                // Open a menu/dropdown, load up db food list, choose food,
                 // extrapolate that out of db and add to listview
+                if (getActivity() != null) {
+                    // Create dialog box and spinner for it
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                    View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_main, null);
+                    dialogBuilder.setView(dialogView);
+                    dialogBuilder.setTitle("Add food");
+
+                    Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
+                    // TODO query from mdb and populate spinner
+
+                    spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            //TODO query from db and add to foods
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            // TODO idk
+                        }
+                    });
+
+                    dialogBuilder.create().show();
+                }
 
                 // test adding
                 mFoodsEaten.add("Haw Hamburger");
@@ -129,6 +157,14 @@ public class MainFragment extends ListFragment {
                 mTotalCarbs = 0;
                 mTotalFat = 0;
                 mTotalProtein = 0;
+            }
+        });
+
+        FloatingActionButton quitButton = (FloatingActionButton)getView().findViewById(R.id.quit);
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().finish();
             }
         });
     }
