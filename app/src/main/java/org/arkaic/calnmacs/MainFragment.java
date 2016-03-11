@@ -122,25 +122,14 @@ public class MainFragment extends ListFragment {
                     Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
                     // TODO query from mdb and populate spinner
                     List<String> spinnerItems = new ArrayList<>();
-                    Cursor foodNameCursor = mDb.rawQuery("SELECT " + FoodDbColumns.FOOD_NAME_COLUMN, null);
-                    spinnerItems.add("yes");
-                    spinnerItems.add("well um");
-                    spinnerItems.add("nah");
-                    spinnerItems.add("yes");
-                    spinnerItems.add("well um");
-                    spinnerItems.add("nah");
-                    spinnerItems.add("yes");
-                    spinnerItems.add("well um");
-                    spinnerItems.add("nah");
-                    spinnerItems.add("yes");
-                    spinnerItems.add("well um");
-                    spinnerItems.add("nah");
-                    spinnerItems.add("yes");
-                    spinnerItems.add("well um");
-                    spinnerItems.add("nah");
-                    spinnerItems.add("yes");
-                    spinnerItems.add("well um");
-                    spinnerItems.add("nah");
+                    Cursor foodNameCursor = mDb.rawQuery(
+                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM foods",
+                            null);
+                    if (foodNameCursor.moveToFirst()) {
+                        do {
+                            spinnerItems.add(foodNameCursor.getString(0));
+                        } while (foodNameCursor.moveToNext());
+                    }
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                             getActivity(), android.R.layout.simple_spinner_item, spinnerItems);
@@ -152,6 +141,7 @@ public class MainFragment extends ListFragment {
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             //TODO query from db and add to foods
                         }
+
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
                             // TODO idk
