@@ -19,14 +19,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.SpinnerAdapter;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
@@ -125,6 +125,30 @@ public class MainFragment extends ListFragment {
 
                     Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
                     // TODO query from mdb and populate spinner
+                    List<String> spinnerItems = new ArrayList<>();
+                    spinnerItems.add("yes");
+                    spinnerItems.add("well um");
+                    spinnerItems.add("nah");
+                    spinnerItems.add("yes");
+                    spinnerItems.add("well um");
+                    spinnerItems.add("nah");
+                    spinnerItems.add("yes");
+                    spinnerItems.add("well um");
+                    spinnerItems.add("nah");
+                    spinnerItems.add("yes");
+                    spinnerItems.add("well um");
+                    spinnerItems.add("nah");
+                    spinnerItems.add("yes");
+                    spinnerItems.add("well um");
+                    spinnerItems.add("nah");
+                    spinnerItems.add("yes");
+                    spinnerItems.add("well um");
+                    spinnerItems.add("nah");
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                            getActivity(), android.R.layout.simple_spinner_item, spinnerItems);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(adapter);
 
                     spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
                         @Override
@@ -205,4 +229,14 @@ public class MainFragment extends ListFragment {
         // TODO: Update argument type and name
         void onMainFragmentInteraction(Uri uri);
     }
+
+//    private class MySpinnerAdapter extends ArrayAdapter implements SpinnerAdapter {
+//        public MySpinnerAdapter() {
+//            super
+//        }
+////        @Override
+////        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+////            return null;
+////        }
+//    }
 }
