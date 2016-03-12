@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class MainFragment extends ListFragment {
     private double mTotalCarbs = 0;
     private double mTotalProtein = 0;
 
+    private int MAX_PICKER_VALUE = 1000;
+    private double STEP_PICKER_VALUE = 0.5;
+
     public MainFragment() {}
 
     public static MainFragment newInstance(int position) {
@@ -74,14 +78,8 @@ public class MainFragment extends ListFragment {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
 
-        final ListView listView = (ListView)view.findViewById(android.R.id.list);
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
-        mFoodsEaten.add("soy");
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFoodsEaten);
+        final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -150,6 +148,12 @@ public class MainFragment extends ListFragment {
                             mSelectedSpinnerFood = spinnerItems.get(0);
                         }
                     });
+
+                    // Number picker config
+                    NumberPicker picker = (NumberPicker)dialogView.findViewById(R.id.amount_number_picker);
+                    picker.setMinValue(0);
+                    picker.setMaxValue(MAX_PICKER_VALUE);
+                    picker.setWrapSelectorWheel(false);
 
                     // OK button config
                     dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
