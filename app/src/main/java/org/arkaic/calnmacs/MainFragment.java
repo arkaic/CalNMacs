@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -23,7 +24,9 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
@@ -49,7 +52,7 @@ public class MainFragment extends ListFragment {
     private double mTotalProtein = 0;
 
     private int MAX_PICKER_VALUE = 1000;
-    private double STEP_PICKER_VALUE = 0.5;
+//    private double STEP_PICKER_VALUE = 0.5;
 
     public MainFragment() {}
 
@@ -77,6 +80,9 @@ public class MainFragment extends ListFragment {
     public void onViewCreated(View view, final Bundle savedInstanceState) {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
+
+        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsString());
+        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitleTextColor(Color.WHITE);
 
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
@@ -123,7 +129,7 @@ public class MainFragment extends ListFragment {
                     // Populate list with food names and make adapter for spinner
                     final List<String> spinnerItems = new ArrayList<>();
                     Cursor foodNameCursor = mDb.rawQuery(
-                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM foods",
+                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME,
                             null);
                     if (foodNameCursor.moveToFirst()) {
                         do { spinnerItems.add(foodNameCursor.getString(0));
@@ -150,7 +156,7 @@ public class MainFragment extends ListFragment {
                     });
 
                     // Number picker config
-                    NumberPicker picker = (NumberPicker)dialogView.findViewById(R.id.amount_number_picker);
+                    final NumberPicker picker = (NumberPicker)dialogView.findViewById(R.id.amount_number_picker);
                     picker.setMinValue(0);
                     picker.setMaxValue(MAX_PICKER_VALUE);
                     picker.setWrapSelectorWheel(false);
@@ -159,9 +165,43 @@ public class MainFragment extends ListFragment {
                     dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO query chosen spinner food from db (or some faster method) and add to listview, update numbers
-                            mFoodsEaten.add(mSelectedSpinnerFood);
+                            int amount = picker.getValue();
+                            Cursor cursor = mDb.rawQuery(
+                                "SELECT * FROM " + FoodDbColumns.TABLE_NAME + " WHERE " +
+                                        FoodDbColumns.FOOD_NAME_COLUMN + "=\"" +
+                                        mSelectedSpinnerFood + "\"",
+                                null);
+
+                            // rowStr represents the listview row displaying chosen food's data
+                            String rowStr = "";
+                            if (cursor.moveToFirst()) {
+                                String colName;
+                                String item;
+                                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                                    colName = cursor.getColumnName(i);
+                                    item = cursor.getString(i);
+                                    if (colName.equals(FoodDbColumns.ID_COLUMN))
+                                        continue;
+                                    switch (colName) {
+                                        case FoodDbColumns.FAT_COLUMN:
+                                            mTotalFat += Double.parseDouble(item); break;
+                                        case FoodDbColumns.CARBS_COLUMN:
+                                            mTotalCarbs += Double.parseDouble(item); break;
+                                        case FoodDbColumns.PROTEIN_COLUMN:
+                                            mTotalProtein += Double.parseDouble(item); break;
+                                        case FoodDbColumns.CALS_COLUMN:
+                                            mTotalCals += Double.parseDouble(item); break;
+                                    }
+                                    rowStr += " " + item + FoodDbColumns.COLUMN_NAME_MAP.get(colName);
+                                    if (colName.equals(FoodDbColumns.FOOD_NAME_COLUMN))
+                                        rowStr += "\n";
+                                }
+                            } else {
+                                rowStr = "UNEXPLAINED ERROR, DATABASE QUERY RETURNED NOTHING";
+                            }
+                            mFoodsEaten.add(rowStr);
                             mAdapter.notifyDataSetChanged();
+                            ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsString());
                         }
                     });
 
@@ -229,13 +269,18 @@ public class MainFragment extends ListFragment {
         void onMainFragmentInteraction(Uri uri);
     }
 
-//    private class MySpinnerAdapter extends ArrayAdapter implements SpinnerAdapter {
-//        public MySpinnerAdapter() {
-//            super
-//        }
-////        @Override
-////        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-////            return null;
-////        }
-//    }
+    private String totalsString() {
+        String retVal = "Fat:" + mTotalFat + "  Carbs:" + mTotalCarbs + "  Protein:" + mTotalProtein + "  Calories:" + mTotalCals;
+        return retVal;
+    }
+
+    private class CustomArrayAdapter extends ArrayAdapter {
+
+        private List<String> mFoodList;
+
+        public CustomArrayAdapter(Context context, int resource, List<String> foodsEaten) {
+            super(context, resource, foodsEaten);
+            mFoodList = foodsEaten;
+        }
+    }
 }
