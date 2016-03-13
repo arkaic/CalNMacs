@@ -85,6 +85,14 @@ public class MainFragment extends ListFragment {
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(mAdapter);
+        View padding = new View(getActivity());
+        padding.setMinimumHeight(150);
+        listView.addHeaderView(padding);
+
+        /* -----------------------------------------------------------------------------------------
+         *                                     FOOD CLICKED
+         * -----------------------------------------------------------------------------------------
+         */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {

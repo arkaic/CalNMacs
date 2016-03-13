@@ -23,7 +23,8 @@
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
         android:listSelector="@color/colorPrimary"
-        android:layout_below="@id/fooddb_toolbar"/>
+        android:layout_below="@id/main_toolbar"
+        />
 
     <TextView
         android:id="@android:id/empty"
