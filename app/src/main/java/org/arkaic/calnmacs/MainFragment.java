@@ -81,9 +81,6 @@ public class MainFragment extends ListFragment {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
 
-        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsString());
-        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitleTextColor(Color.WHITE);
-
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -110,6 +107,10 @@ public class MainFragment extends ListFragment {
                 }
             }
         });
+
+        final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
+        toolbar.setTitle(totalsString());
+        toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
          *                                     ADD FOOD BUTTON
@@ -145,10 +146,8 @@ public class MainFragment extends ListFragment {
                     spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            //TODO query from db and add to foods
                             mSelectedSpinnerFood = spinnerItems.get(position);
                         }
-
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
                             mSelectedSpinnerFood = spinnerItems.get(0);
@@ -173,6 +172,7 @@ public class MainFragment extends ListFragment {
                                 null);
 
                             // rowStr represents the listview row displaying chosen food's data
+                            // TODO fix or refactor out this really messy string building
                             String rowStr = "";
                             if (cursor.moveToFirst()) {
                                 String colName;
@@ -180,17 +180,25 @@ public class MainFragment extends ListFragment {
                                 for (int i = 0; i < cursor.getColumnCount(); i++) {
                                     colName = cursor.getColumnName(i);
                                     item = cursor.getString(i);
+                                    int multiplier = picker.getValue();
                                     if (colName.equals(FoodDbColumns.ID_COLUMN))
                                         continue;
                                     switch (colName) {
                                         case FoodDbColumns.FAT_COLUMN:
-                                            mTotalFat += Double.parseDouble(item); break;
+                                            mTotalFat += (Double.parseDouble(item) * multiplier); break;
                                         case FoodDbColumns.CARBS_COLUMN:
-                                            mTotalCarbs += Double.parseDouble(item); break;
+                                            mTotalCarbs += (Double.parseDouble(item) * multiplier); break;
                                         case FoodDbColumns.PROTEIN_COLUMN:
-                                            mTotalProtein += Double.parseDouble(item); break;
+                                            mTotalProtein += (Double.parseDouble(item) * multiplier); break;
                                         case FoodDbColumns.CALS_COLUMN:
-                                            mTotalCals += Double.parseDouble(item); break;
+                                            mTotalCals += (Double.parseDouble(item) * multiplier); break;
+                                    }
+                                    if (colName.equals(FoodDbColumns.UNIT_COLUMN))
+                                        rowStr += multiplier;
+                                    if (!colName.equals(FoodDbColumns.UNIT_COLUMN) &&
+                                            !colName.equals(FoodDbColumns.RATIO_COLUMN) &&
+                                            !colName.equals(FoodDbColumns.FOOD_NAME_COLUMN)) {
+                                        item = Double.toString((int)Double.parseDouble(item) * multiplier);
                                     }
                                     rowStr += " " + item + FoodDbColumns.COLUMN_NAME_MAP.get(colName);
                                     if (colName.equals(FoodDbColumns.FOOD_NAME_COLUMN))
@@ -201,7 +209,7 @@ public class MainFragment extends ListFragment {
                             }
                             mFoodsEaten.add(rowStr);
                             mAdapter.notifyDataSetChanged();
-                            ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsString());
+                            toolbar.setTitle(totalsString());
                         }
                     });
 
