@@ -195,11 +195,12 @@ public class MainFragment extends ListFragment {
             @Override
             public void onClick(View view) {
                 mFoodsEaten.clear();
-                mAdapter.notifyDataSetChanged();
                 mTotalCals = 0;
                 mTotalCarbs = 0;
                 mTotalFat = 0;
                 mTotalProtein = 0;
+                toolbar.setTitle(totalsString());
+                mAdapter.notifyDataSetChanged();
             }
         });
 
