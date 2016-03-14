@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,9 +45,9 @@ public class MainFragment extends ListFragment {
     private ArrayAdapter<String> mAdapter;
     private SQLiteDatabase mDb;
     private OnMainFragmentInteractionListener mListener;
-    private ArrayList<String> mFoodsEaten = new ArrayList<>();
+    private List<Food> mFoodsEaten = new ArrayList<>();
     private String mSelectedSpinnerFood = null;
-    private int mTotalCals = 0;
+    private double mTotalCals = 0;
     private double mTotalFat = 0;
     private double mTotalCarbs = 0;
     private double mTotalProtein = 0;
@@ -81,7 +82,7 @@ public class MainFragment extends ListFragment {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
 
-        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFoodsEaten);
+        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, (List)mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(mAdapter);
@@ -101,7 +102,7 @@ public class MainFragment extends ListFragment {
                     new AlertDialog.Builder(getActivity())
                             .setPositiveButton("Change amount", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    // TODO
+                                    // TODO should keep track of
                                 }
                             })
                             .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
@@ -173,50 +174,13 @@ public class MainFragment extends ListFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             int amount = picker.getValue();
-                            Cursor cursor = mDb.rawQuery(
-                                "SELECT * FROM " + FoodDbColumns.TABLE_NAME + " WHERE " +
-                                        FoodDbColumns.FOOD_NAME_COLUMN + "=\"" +
-                                        mSelectedSpinnerFood + "\"",
-                                null);
-
-                            // rowStr represents the listview row displaying chosen food's data
-                            // TODO fix or refactor out this really messy string building
-                            String rowStr = "";
-                            if (cursor.moveToFirst()) {
-                                String colName;
-                                String item;
-                                for (int i = 0; i < cursor.getColumnCount(); i++) {
-                                    colName = cursor.getColumnName(i);
-                                    item = cursor.getString(i);
-                                    int multiplier = picker.getValue();
-                                    if (colName.equals(FoodDbColumns.ID_COLUMN))
-                                        continue;
-                                    switch (colName) {
-                                        case FoodDbColumns.FAT_COLUMN:
-                                            mTotalFat += (Double.parseDouble(item) * multiplier); break;
-                                        case FoodDbColumns.CARBS_COLUMN:
-                                            mTotalCarbs += (Double.parseDouble(item) * multiplier); break;
-                                        case FoodDbColumns.PROTEIN_COLUMN:
-                                            mTotalProtein += (Double.parseDouble(item) * multiplier); break;
-                                        case FoodDbColumns.CALS_COLUMN:
-                                            mTotalCals += (Double.parseDouble(item) * multiplier); break;
-                                    }
-                                    if (colName.equals(FoodDbColumns.UNIT_COLUMN))
-                                        rowStr += multiplier;
-                                    if (!colName.equals(FoodDbColumns.UNIT_COLUMN) &&
-                                            !colName.equals(FoodDbColumns.RATIO_COLUMN) &&
-                                            !colName.equals(FoodDbColumns.FOOD_NAME_COLUMN)) {
-                                        item = Double.toString((int)Double.parseDouble(item) * multiplier);
-                                    }
-                                    rowStr += " " + item + FoodDbColumns.COLUMN_NAME_MAP.get(colName);
-                                    if (colName.equals(FoodDbColumns.FOOD_NAME_COLUMN))
-                                        rowStr += "\n";
-                                }
-                            } else {
-                                rowStr = "UNEXPLAINED ERROR, DATABASE QUERY RETURNED NOTHING";
-                            }
-                            mFoodsEaten.add(rowStr);
+                            Food selectedFood = new Food(mSelectedSpinnerFood, amount);
+                            mFoodsEaten.add(selectedFood);
                             mAdapter.notifyDataSetChanged();
+                            mTotalCals += selectedFood.calories();
+                            mTotalProtein += selectedFood.protein();
+                            mTotalCarbs += selectedFood.carbs();
+                            mTotalFat += selectedFood.fat();
                             toolbar.setTitle(totalsString());
                         }
                     });
@@ -290,13 +254,72 @@ public class MainFragment extends ListFragment {
         return retVal;
     }
 
-    private class CustomArrayAdapter extends ArrayAdapter {
+    private class Food {
 
-        private List<String> mFoodList;
+        private int mId;
+        private String mName;
+        private String mUnit;
+        private double mProteinRatio;
+        private double mFat;
+        private double mCarbs;
+        private double mProtein;
+        private double mCals;
+        private int mAmount;
 
-        public CustomArrayAdapter(Context context, int resource, List<String> foodsEaten) {
-            super(context, resource, foodsEaten);
-            mFoodList = foodsEaten;
+        public Food(String foodName, int amount) {
+            mName = foodName;
+            mAmount = amount;
+            Cursor cursor = mDb.rawQuery(
+                    "SELECT * FROM " + FoodDbColumns.TABLE_NAME + " WHERE " +
+                            FoodDbColumns.FOOD_NAME_COLUMN + "=\"" +
+                            mSelectedSpinnerFood + "\"",
+                    null);
+            if (cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    String column = cursor.getColumnName(i);
+                    String item = cursor.getString(i);
+                    switch (column) {
+                        case FoodDbColumns.ID_COLUMN:
+                            mId = Integer.parseInt(item); break;
+                        case FoodDbColumns.UNIT_COLUMN:
+                            mUnit = item; break;
+                        case FoodDbColumns.RATIO_COLUMN:
+                            mProteinRatio = Double.parseDouble(item); break;
+                        case FoodDbColumns.PROTEIN_COLUMN:
+                            mProtein = Double.parseDouble(item); break;
+                        case FoodDbColumns.FAT_COLUMN:
+                            mFat = Double.parseDouble(item); break;
+                        case FoodDbColumns.CARBS_COLUMN:
+                            mCarbs = Double.parseDouble(item); break;
+                        case FoodDbColumns.CALS_COLUMN:
+                            mCals = Double.parseDouble(item); break;
+                    }
+                }
+            } else {
+                // TODO should throw an exception here
+            }
+        }
+
+        public void setAmount(int amount) {
+            mAmount = amount;
+        }
+        public int fat() {
+            return (int)(mFat * mAmount);
+        }
+        public int carbs() {
+            return (int)(mCarbs * mAmount);
+        }
+        public int protein() {
+            return (int)(mProtein * mAmount);
+        }
+        public int calories() {
+            return (int)(mCals * mAmount);
+        }
+
+        @Override
+        public String toString() {
+            return MessageFormat.format("{0}  {1} {2}\nFat:{3}g  Carbs:{4}g  Protein:{5}g\n{6} kcals",
+                    mName, mAmount, mUnit, fat(), carbs(), protein(), calories());
         }
     }
 }
