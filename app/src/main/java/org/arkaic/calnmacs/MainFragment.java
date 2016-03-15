@@ -82,6 +82,19 @@ public class MainFragment extends ListFragment {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
 
+        /* -----------------------------------------------------------------------------------------
+         *                                     TOOLBAR CONFIG
+         * -----------------------------------------------------------------------------------------
+         */
+        final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
+        toolbar.setTitle(totalsString());
+        toolbar.setTitleTextColor(Color.WHITE);
+
+        /* -----------------------------------------------------------------------------------------
+         *                                     LISTVIEW CONFIG
+         * -----------------------------------------------------------------------------------------
+         */
+
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, (List)mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -91,38 +104,63 @@ public class MainFragment extends ListFragment {
         listView.addHeaderView(padding);
 
         /* -----------------------------------------------------------------------------------------
-         *                                     FOOD CLICKED
+         *                                     FOOD CLICKED CONFIG
          * -----------------------------------------------------------------------------------------
          */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                // TODO bring up dialog for edit numbers or delete
                 if (getActivity() != null) {
-                    new AlertDialog.Builder(getActivity())
-                            .setPositiveButton("Change amount", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    // TODO should keep track of
-                                }
-                            })
-                            .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    // TODO use position
-                                    mFoodsEaten.remove(position);
-                                    mAdapter.notifyDataSetChanged();
-                                }
-                            })
-                            .show();
+                    final int index = position - 1;
+                    final Food selectedFood = mFoodsEaten.get(index);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_edit_main, null);
+                    builder.setView(dialogView);
+                    builder.setTitle("Edit Food");
+
+                    final NumberPicker picker = (NumberPicker)dialogView.findViewById(R.id.edit_amount_number_picker);
+                    picker.setMinValue(0);
+                    picker.setMaxValue(MAX_PICKER_VALUE);
+                    picker.setWrapSelectorWheel(false);
+                    picker.setValue(selectedFood.amount());
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            int newAmount = picker.getValue();
+                            if (newAmount != selectedFood.amount()) {
+                                mTotalCals -= selectedFood.calories();
+                                mTotalProtein -= selectedFood.protein();
+                                mTotalCarbs -= selectedFood.carbs();
+                                mTotalFat -= selectedFood.fat();
+                                selectedFood.setAmount(newAmount);
+                                mTotalCals += selectedFood.calories();
+                                mTotalProtein += selectedFood.protein();
+                                mTotalCarbs += selectedFood.carbs();
+                                mTotalFat += selectedFood.fat();
+                                mAdapter.notifyDataSetChanged();
+                                toolbar.setTitle(totalsString());
+                            }
+                        }
+                    });
+
+                    builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            mTotalCals -= selectedFood.calories();
+                            mTotalProtein -= selectedFood.protein();
+                            mTotalCarbs -= selectedFood.carbs();
+                            mTotalFat -= selectedFood.fat();
+                            mFoodsEaten.remove(index);
+                            mAdapter.notifyDataSetChanged();
+                            toolbar.setTitle(totalsString());
+                        }
+                    });
+                    builder.show();
                 }
             }
         });
 
-        final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
-        toolbar.setTitle(totalsString());
-        toolbar.setTitleTextColor(Color.WHITE);
-
         /* -----------------------------------------------------------------------------------------
-         *                                     ADD FOOD BUTTON
+         *                                     ADD FOOD BUTTON CONFIG
          * -----------------------------------------------------------------------------------------
          */
         FloatingActionButton addButton = (FloatingActionButton)getView().findViewById(R.id.add);
@@ -251,10 +289,13 @@ public class MainFragment extends ListFragment {
     }
 
     private String totalsString() {
-        String retVal = "Fat:" + mTotalFat + "  Carbs:" + mTotalCarbs + "  Protein:" + mTotalProtein + "  Calories:" + mTotalCals;
+        String retVal = mTotalCals + " kcals: " + mTotalFat + "g F   " + mTotalCarbs + "g C   " + mTotalProtein + "g P";
         return retVal;
     }
 
+    /*
+       One instance of Food per Listview row in this fragment.
+     */
     private class Food {
 
         private int mId;
@@ -303,6 +344,9 @@ public class MainFragment extends ListFragment {
 
         public void setAmount(int amount) {
             mAmount = amount;
+        }
+        public int amount() {
+            return mAmount;
         }
         public int fat() {
             return (int)(mFat * mAmount);
