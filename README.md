@@ -9,3 +9,10 @@ The food database will not be [necessarily] based on any public databases out th
 
 Life is complex and I prefer not to add too much more to it, so simply keeping track of the calorie count and the three macros is sufficient for me.
 
+
+## Features and Layout
+The app is planned to have two pages that should each swipe laterally to the other.
+
+The left page is the main page, where you can add/delete/edit foods you have eaten for the day. This should be saved between app suspensions/pauses/closures until you hit the CLEAR ALL button. Foods will only have carb, fat, protein, and calorie counts. When choosing foods, you just need to choose the amount you have eaten. (I plan on adding the ability to switch unit types for any given food, but for now, each food item in the sqlite database will have their own 'unit type' column)
+
+The right page is the food list that displays all foods in the database. I will prepopulate the database with my own foods for now, but in the future, I may have the app start off with an empty database and allow the user the ability to populate it with a csv file.
