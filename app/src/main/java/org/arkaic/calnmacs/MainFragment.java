@@ -25,9 +25,12 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -52,7 +55,7 @@ public class MainFragment extends ListFragment {
     private ArrayAdapter<String> mAdapter;
     private SQLiteDatabase mDb;
     private OnMainFragmentInteractionListener mListener;
-    private List<Food> mFoodsEaten = new ArrayList<>();
+    private List<FoodChosen> mFoodsEaten = new ArrayList<>();
     private String mSelectedSpinnerFood = null;
     private double mTotalCals = 0;
     private double mTotalFat = 0;
@@ -60,7 +63,7 @@ public class MainFragment extends ListFragment {
     private double mTotalProtein = 0;
 
     private int MAX_PICKER_VALUE = 1000;
-    private String SAVED_DATA_FILENAME = "saveddata";
+    private String SAVED_DATA_FILENAME = "saveddata.ser";
 //    private double STEP_PICKER_VALUE = 0.5;
 
     public MainFragment() {}
@@ -83,13 +86,26 @@ public class MainFragment extends ListFragment {
         mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
 
         // Restore saved stuff
-        if (savedInstanceState != null) {
-//            mFoodsEaten = savedInstanceState.getParcelableArrayList("Foods eaten");
-//            mTotalCals = savedInstanceState.getDouble("Total Calories");
-//            mTotalFat = savedInstanceState.getDouble("Total Fat");
-//            mTotalCarbs = savedInstanceState.getDouble("Total Carbs");
-//            mTotalProtein = savedInstanceState.getDouble("Total Protein");
+        ObjectInputStream ois = null;
+        String what = "nothing";
+        try {
+            ois = new ObjectInputStream(getContext().openFileInput(SAVED_DATA_FILENAME));
+            mFoodsEaten = (List)ois.readObject();
+            what = "something shoulda happened";
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            mFoodsEaten = new ArrayList<>();
+            what = "class not found";
         }
+
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+//        View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_main, null);
+//        dialogBuilder.setView(dialogView);
+//        dialogBuilder.setTitle(what + " = " + mFoodsEaten.size());
+//        dialogBuilder.create().show();
     }
 
     @Override
@@ -132,7 +148,7 @@ public class MainFragment extends ListFragment {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 if (getActivity() != null) {
                     final int index = position - 1;
-                    final Food selectedFood = mFoodsEaten.get(index);
+                    final FoodChosen selectedFood = mFoodsEaten.get(index);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_edit_main, null);
                     builder.setView(dialogView);
@@ -232,7 +248,7 @@ public class MainFragment extends ListFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             int amount = picker.getValue();
-                            Food selectedFood = new Food(mSelectedSpinnerFood, amount);
+                            FoodChosen selectedFood = new FoodChosen(mSelectedSpinnerFood, amount, mDb);
                             mFoodsEaten.add(selectedFood);
                             mAdapter.notifyDataSetChanged();
                             mTotalCals += selectedFood.calories();
@@ -272,22 +288,11 @@ public class MainFragment extends ListFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle save) {
-        super.onSaveInstanceState(save);
-//        save.putDouble("Total Calories", mTotalCals);
-//        save.putDouble("Total Fat", mTotalFat);
-//        save.putDouble("Total Carbs", mTotalCarbs);
-//        save.putDouble("Total Protein", mTotalProtein);
-//        save.putParcelableArrayList("Foods eaten", (ArrayList) mFoodsEaten);
-//        // TODO put db?
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         FileOutputStream fos = null;
         try {
-            fos = getContext().openFileOutput(SAVED_DATA_FILENAME + ".ser", Context.MODE_PRIVATE);
+            fos = getContext().openFileOutput(SAVED_DATA_FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(mFoodsEaten);
             oos.close();
@@ -307,6 +312,7 @@ public class MainFragment extends ListFragment {
 
     @Override
     public void onAttach(Context context) {
+        // before oncreate
         super.onAttach(context);
         if (context instanceof OnMainFragmentInteractionListener) {
             mListener = (OnMainFragmentInteractionListener) context;
@@ -339,121 +345,5 @@ public class MainFragment extends ListFragment {
     private String totalsString() {
         String retVal = mTotalCals + " kcals: " + mTotalFat + "g F   " + mTotalCarbs + "g C   " + mTotalProtein + "g P";
         return retVal;
-    }
-
-    /*
-       One instance of Food per Listview row in this fragment.
-     */
-    private class Food implements Serializable {   //implements Parcelable {
-
-        private int mId;
-        private String mName;
-        private String mUnit;
-        private double mProteinRatio;
-        private double mFat;
-        private double mCarbs;
-        private double mProtein;
-        private double mCals;
-        private int mAmount;
-
-        public Food(String foodName, int amount) {
-            mName = foodName;
-            mAmount = amount;
-            Cursor cursor = mDb.rawQuery(
-                    "SELECT * FROM " + FoodDbColumns.TABLE_NAME + " WHERE " +
-                            FoodDbColumns.FOOD_NAME_COLUMN + "=\"" +
-                            mSelectedSpinnerFood + "\"",
-                    null);
-            if (cursor.moveToFirst()) {
-                for (int i = 0; i < cursor.getColumnCount(); i++) {
-                    String column = cursor.getColumnName(i);
-                    String item = cursor.getString(i);
-                    switch (column) {
-                        case FoodDbColumns.ID_COLUMN:
-                            mId = Integer.parseInt(item); break;
-                        case FoodDbColumns.UNIT_COLUMN:
-                            mUnit = item; break;
-                        case FoodDbColumns.RATIO_COLUMN:
-                            mProteinRatio = Double.parseDouble(item); break;
-                        case FoodDbColumns.PROTEIN_COLUMN:
-                            mProtein = Double.parseDouble(item); break;
-                        case FoodDbColumns.FAT_COLUMN:
-                            mFat = Double.parseDouble(item); break;
-                        case FoodDbColumns.CARBS_COLUMN:
-                            mCarbs = Double.parseDouble(item); break;
-                        case FoodDbColumns.CALS_COLUMN:
-                            mCals = Double.parseDouble(item); break;
-                    }
-                }
-            } else {
-                // TODO should throw an exception here
-            }
-        }
-
-        public void setAmount(int amount) {
-            mAmount = amount;
-        }
-        public int amount() {
-            return mAmount;
-        }
-        public int fat() {
-            return (int)(mFat * mAmount);
-        }
-        public int carbs() {
-            return (int)(mCarbs * mAmount);
-        }
-        public int protein() {
-            return (int)(mProtein * mAmount);
-        }
-        public int calories() {
-            return (int)(mCals * mAmount);
-        }
-
-        @Override
-        public String toString() {
-            return MessageFormat.format("{0}  {1} {2}\nFat:{3}g  Carbs:{4}g  Protein:{5}g\n{6} kcals",
-                    mName, mAmount, mUnit, fat(), carbs(), protein(), calories());
-        }
-
-//        /* -----------------------------------------------------------------------------------------
-//         *               INTERFACE IMPLEMENTATION FOR SAVING INTO SAVEDINSTANCE BUNDLES
-//         * -----------------------------------------------------------------------------------------
-//         */
-//        /* Constructor for save stating the object */
-//        private Food(Parcel in) {
-//            mId = in.readInt();
-//            mName = in.readString();
-//            mUnit = in.readString();
-//            mProteinRatio = in.readDouble();
-//            mFat = in.readDouble();
-//            mCarbs = in.readDouble();
-//            mProtein = in.readDouble();
-//            mCals = in.readDouble();
-//            mAmount = in.readInt();
-//        }
-//        public int describeContents() {
-//            return 0;
-//        }
-//        public void writeToParcel(Parcel out, int flags) {
-//            out.writeInt(mId);
-//            out.writeString(mName);
-//            out.writeString(mUnit);
-//            out.writeDouble(mProteinRatio);
-//            out.writeDouble(mFat);
-//            out.writeDouble(mCarbs);
-//            out.writeDouble(mProtein);
-//            out.writeDouble(mCals);
-//            out.writeInt(mAmount);
-//        }
-//        public final Parcelable.Creator<Food> CREATOR = new Parcelable.Creator<Food>() {
-//            public Food createFromParcel(Parcel in) {
-//                return new Food(in);
-//            }
-//
-//            public Food[] newArray(int size) {
-//                return new Food[size];
-//            }
-//        };
-
     }
 }
