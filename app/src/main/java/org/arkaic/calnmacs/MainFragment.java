@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -25,19 +23,13 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
@@ -55,7 +47,7 @@ public class MainFragment extends ListFragment {
     private ArrayAdapter<String> mAdapter;
     private SQLiteDatabase mDb;
     private OnMainFragmentInteractionListener mListener;
-    private List<FoodChosen> mFoodsEaten = new ArrayList<>();
+    private List<Food> mFoodsEaten = new ArrayList<>();
     private String mSelectedSpinnerFood = null;
     private double mTotalCals = 0;
     private double mTotalFat = 0;
@@ -85,27 +77,24 @@ public class MainFragment extends ListFragment {
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
 
-        // Restore saved stuff
+        // Restore saved food choices and cal&mac totals
         ObjectInputStream ois = null;
-        String what = "nothing";
         try {
             ois = new ObjectInputStream(getContext().openFileInput(SAVED_DATA_FILENAME));
             mFoodsEaten = (List)ois.readObject();
-            what = "something shoulda happened";
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             mFoodsEaten = new ArrayList<>();
-            what = "class not found";
         }
-
-//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-//        View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_main, null);
-//        dialogBuilder.setView(dialogView);
-//        dialogBuilder.setTitle(what + " = " + mFoodsEaten.size());
-//        dialogBuilder.create().show();
+        for (Food food : mFoodsEaten) {
+            mTotalCals += food.calories();
+            mTotalProtein += food.protein();
+            mTotalFat += food.fat();
+            mTotalCarbs += food.carbs();
+        }
     }
 
     @Override
@@ -148,7 +137,7 @@ public class MainFragment extends ListFragment {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 if (getActivity() != null) {
                     final int index = position - 1;
-                    final FoodChosen selectedFood = mFoodsEaten.get(index);
+                    final Food selectedFood = mFoodsEaten.get(index);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_edit_main, null);
                     builder.setView(dialogView);
@@ -248,7 +237,7 @@ public class MainFragment extends ListFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             int amount = picker.getValue();
-                            FoodChosen selectedFood = new FoodChosen(mSelectedSpinnerFood, amount, mDb);
+                            Food selectedFood = new Food(mSelectedSpinnerFood, amount, mDb);
                             mFoodsEaten.add(selectedFood);
                             mAdapter.notifyDataSetChanged();
                             mTotalCals += selectedFood.calories();

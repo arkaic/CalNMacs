@@ -8,7 +8,7 @@ import java.text.MessageFormat;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
-public class FoodChosen implements Serializable {
+public class Food implements Serializable {
 
     private int mId = -1;
     private String mName = null;
@@ -20,7 +20,7 @@ public class FoodChosen implements Serializable {
     private double mCals = -1;
     private int mAmount = -1;
 
-    public FoodChosen(String foodName, int amount, SQLiteDatabase db) {
+    public Food(String foodName, int amount, SQLiteDatabase db) {
         mName = foodName;
         mAmount = amount;
         Cursor cursor = db.rawQuery(
