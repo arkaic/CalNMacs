@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +25,11 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +60,7 @@ public class MainFragment extends ListFragment {
     private double mTotalProtein = 0;
 
     private int MAX_PICKER_VALUE = 1000;
+    private String SAVED_DATA_FILENAME = "saveddata";
 //    private double STEP_PICKER_VALUE = 0.5;
 
     public MainFragment() {}
@@ -60,6 +68,7 @@ public class MainFragment extends ListFragment {
     public static MainFragment newInstance(int position) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
+        args.putInt("something", 7521);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,9 +76,20 @@ public class MainFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+
         Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
+
+        // Restore saved stuff
+        if (savedInstanceState != null) {
+//            mFoodsEaten = savedInstanceState.getParcelableArrayList("Foods eaten");
+//            mTotalCals = savedInstanceState.getDouble("Total Calories");
+//            mTotalFat = savedInstanceState.getDouble("Total Fat");
+//            mTotalCarbs = savedInstanceState.getDouble("Total Carbs");
+//            mTotalProtein = savedInstanceState.getDouble("Total Protein");
+        }
     }
 
     @Override
@@ -251,6 +271,34 @@ public class MainFragment extends ListFragment {
         });
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle save) {
+        super.onSaveInstanceState(save);
+//        save.putDouble("Total Calories", mTotalCals);
+//        save.putDouble("Total Fat", mTotalFat);
+//        save.putDouble("Total Carbs", mTotalCarbs);
+//        save.putDouble("Total Protein", mTotalProtein);
+//        save.putParcelableArrayList("Foods eaten", (ArrayList) mFoodsEaten);
+//        // TODO put db?
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        FileOutputStream fos = null;
+        try {
+            fos = getContext().openFileOutput(SAVED_DATA_FILENAME + ".ser", Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(mFoodsEaten);
+            oos.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onMainFragmentInteraction(uri);
@@ -296,7 +344,7 @@ public class MainFragment extends ListFragment {
     /*
        One instance of Food per Listview row in this fragment.
      */
-    private class Food {
+    private class Food implements Serializable {   //implements Parcelable {
 
         private int mId;
         private String mName;
@@ -366,5 +414,46 @@ public class MainFragment extends ListFragment {
             return MessageFormat.format("{0}  {1} {2}\nFat:{3}g  Carbs:{4}g  Protein:{5}g\n{6} kcals",
                     mName, mAmount, mUnit, fat(), carbs(), protein(), calories());
         }
+
+//        /* -----------------------------------------------------------------------------------------
+//         *               INTERFACE IMPLEMENTATION FOR SAVING INTO SAVEDINSTANCE BUNDLES
+//         * -----------------------------------------------------------------------------------------
+//         */
+//        /* Constructor for save stating the object */
+//        private Food(Parcel in) {
+//            mId = in.readInt();
+//            mName = in.readString();
+//            mUnit = in.readString();
+//            mProteinRatio = in.readDouble();
+//            mFat = in.readDouble();
+//            mCarbs = in.readDouble();
+//            mProtein = in.readDouble();
+//            mCals = in.readDouble();
+//            mAmount = in.readInt();
+//        }
+//        public int describeContents() {
+//            return 0;
+//        }
+//        public void writeToParcel(Parcel out, int flags) {
+//            out.writeInt(mId);
+//            out.writeString(mName);
+//            out.writeString(mUnit);
+//            out.writeDouble(mProteinRatio);
+//            out.writeDouble(mFat);
+//            out.writeDouble(mCarbs);
+//            out.writeDouble(mProtein);
+//            out.writeDouble(mCals);
+//            out.writeInt(mAmount);
+//        }
+//        public final Parcelable.Creator<Food> CREATOR = new Parcelable.Creator<Food>() {
+//            public Food createFromParcel(Parcel in) {
+//                return new Food(in);
+//            }
+//
+//            public Food[] newArray(int size) {
+//                return new Food[size];
+//            }
+//        };
+
     }
 }
