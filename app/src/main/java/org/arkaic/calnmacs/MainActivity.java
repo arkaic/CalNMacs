@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity
 
     static final int DUMMY_NUM_ITEMS = 2;
     private SQLiteDatabase mDb;
+    private ViewPager mPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +30,8 @@ public class MainActivity extends AppCompatActivity
         mDb = dbHelper.getWritableDatabase();
 
         // adapter setting
-        ViewPager pager = (ViewPager)findViewById(R.id.pager);
-        pager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
+        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
     }
 
     @Override
