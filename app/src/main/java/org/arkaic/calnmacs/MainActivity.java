@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // Database stuff
-        FoodDbHelper dbHelper = new FoodDbHelper(getApplicationContext());
+        FoodDbHelper dbHelper = FoodDbHelper.getInstance(getApplicationContext());
         mDb = dbHelper.getWritableDatabase();
 
         // adapter setting

@@ -75,7 +75,7 @@ public class MainFragment extends ListFragment {
 
         Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
+        mDb = (FoodDbHelper.getInstance(getActivity().getApplicationContext())).getWritableDatabase();
 
         // Restore saved food choices and cal&mac totals
         ObjectInputStream ois = null;
@@ -120,6 +120,7 @@ public class MainFragment extends ListFragment {
          * -----------------------------------------------------------------------------------------
          */
 
+        // ArrayAdapter to map simple string arrays to
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, (List)mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);

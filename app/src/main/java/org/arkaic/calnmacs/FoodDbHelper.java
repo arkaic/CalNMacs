@@ -5,13 +5,17 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
-
-/**
- * Created by henry on 2/16/16.
- */
 public class FoodDbHelper extends SQLiteAssetHelper {
 
-    public FoodDbHelper(Context c) {
+    private static FoodDbHelper mInstance;
+
+    public static synchronized FoodDbHelper getInstance(Context c) {
+        if (mInstance == null)
+            mInstance = new FoodDbHelper(c.getApplicationContext());
+        return mInstance;
+    }
+
+    private FoodDbHelper(Context c) {
         super(c, FoodDbContract.DATABASE_NAME, null, FoodDbContract.DATABASE_VERSION);
         setForcedUpgrade();  // Forces db overwrite if database version is incremented in Contract class
     }
