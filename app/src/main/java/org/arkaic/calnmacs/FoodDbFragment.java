@@ -61,7 +61,7 @@ public class FoodDbFragment extends ListFragment {
 
         if (getArguments() != null)
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        mDb = (new FoodDbHelper(getActivity().getApplicationContext())).getWritableDatabase();
+        mDb = (FoodDbHelper.getInstance(getActivity().getApplicationContext())).getWritableDatabase();
     }
 
     @Override
@@ -72,7 +72,12 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
-        // make and display adapter
+
+        /* -----------------------------------------------------------------------------------------
+         *                                     LISTVIEW CONFIG
+         * -----------------------------------------------------------------------------------------
+         */
+
         mCursor = mDb.rawQuery("SELECT * from foods;", null);
         String[] fromColumns = {
                 FoodDbColumns.ID_COLUMN,
@@ -86,6 +91,8 @@ public class FoodDbFragment extends ListFragment {
         };
         int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                 R.id.cals, R.id.proteinCalRatio};
+
+        // SimpleCursorAdapter to map db cursor to listview
         mAdapter = new SimpleCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.foodrow_fooddb,
@@ -129,13 +136,18 @@ public class FoodDbFragment extends ListFragment {
             }
         });
 
-        // button on click
+
+        /* -----------------------------------------------------------------------------------------
+         *                                     BUTTON CONFIG
+         * -----------------------------------------------------------------------------------------
+         */
+
         FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // make adaptor
-                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods LIMIT 5;", null));
+                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
                 mAdapter.notifyDataSetChanged();
             }
         });
@@ -173,12 +185,12 @@ public class FoodDbFragment extends ListFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mCursor.close();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mCursor.close();
     }
 
     /**
