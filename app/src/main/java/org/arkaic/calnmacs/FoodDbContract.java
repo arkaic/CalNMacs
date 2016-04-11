@@ -11,7 +11,7 @@ import java.util.Map;
 public final class FoodDbContract {
 
     public static final String DATABASE_NAME = "food.db";
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
 
     public FoodDbContract() {}
 
