@@ -104,6 +104,10 @@ public class FoodDbFragment extends ListFragment {
         listView.setBackgroundColor(Color.BLACK);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(mAdapter);
+        // Pad toolbar
+        View padding = new View(getActivity());
+        padding.setMinimumHeight(150);
+        listView.addHeaderView(padding);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,7 +125,7 @@ public class FoodDbFragment extends ListFragment {
                 // Bring up message dialog displaying information
                 if (getActivity() != null) {
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                    alertDialog.setTitle("Chosen food");
+                    alertDialog.setTitle(name);
                     alertDialog.setMessage(MessageFormat.format(
                             "ID: {0}\nFood: {1}\nunit: {2}\ncarbs: {3}\nfat: {4}\nprotein: {5}\ncalories: {6}\nprotein->cal ratio: {7}",
                             id_, name, unit, carbs, fat, prot, cals, protcals));
