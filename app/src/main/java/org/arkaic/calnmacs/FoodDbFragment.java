@@ -72,6 +72,9 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
+        final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
+        toolbar.setTitle("Food Unit   Carb   Fat    Protein Cal     %");
+        toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
          *                                     LISTVIEW CONFIG
@@ -79,6 +82,7 @@ public class FoodDbFragment extends ListFragment {
          */
 
         mCursor = mDb.rawQuery("SELECT * from foods;", null);
+        // column names
         String[] fromColumns = {
                 FoodDbColumns.ID_COLUMN,
                 FoodDbColumns.FOOD_NAME_COLUMN,
@@ -89,6 +93,7 @@ public class FoodDbFragment extends ListFragment {
                 FoodDbColumns.CALS_COLUMN,
                 FoodDbColumns.RATIO_COLUMN
         };
+        // view id's defined in foodrow xml
         int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                 R.id.cals, R.id.proteinCalRatio};
 

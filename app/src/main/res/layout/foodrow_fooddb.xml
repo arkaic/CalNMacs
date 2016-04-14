@@ -3,59 +3,55 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:shrinkColumns="*"
-    android:stretchColumns="*">
+    android:stretchColumns="*"
+    android:background="#ffffff">
 
     <TableRow
         android:id="@+id/foodRow"
-        android:layout_width="match_parent">
-        <TextView
-            android:id="@+id/_id"
-            android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#00ff00"
-            android:background="#000000"/>
+        android:layout_width="match_parent"
+        android:background="#ffffff">
         <TextView
             android:id="@+id/foodName"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#00ff00"
-            android:background="#ffffff"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
         <TextView
             android:id="@+id/unit"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#00ff00"
-            android:background="#000000"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#00ff00"/>
         <TextView
             android:id="@+id/fat"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#bb330f"
-            android:background="#ffffff"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
         <TextView
             android:id="@+id/carbs"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#aa00ff"
-            android:background="#000000"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
         <TextView
             android:id="@+id/protein"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#00ffcc"
-            android:background="#ffffff"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
         <TextView
             android:id="@+id/cals"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#0000ff"
-            android:background="#000000"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
         <TextView
             android:id="@+id/proteinCalRatio"
             android:layout_gravity="left"
-            android:layout_weight="0.125"
-            android:textColor="#ff0000"
-            android:background="#ffffff"/>
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#ff0000"/>
     </TableRow>
 
 </TableLayout>
