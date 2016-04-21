@@ -201,29 +201,26 @@ public class MainFragment extends ListFragment {
                     dialogBuilder.setTitle("Add food");
 
                     // Populate list with food names and make adapter for spinner
-                    final List<String> spinnerItems = new ArrayList<>();
+                    final List<String> foodNames = new ArrayList<>();
                     Cursor foodNameCursor = mDb.rawQuery(
                             "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME,
                             null);
                     if (foodNameCursor.moveToFirst()) {
-                        do { spinnerItems.add(foodNameCursor.getString(0));
+                        do { foodNames.add(foodNameCursor.getString(0));
                         } while (foodNameCursor.moveToNext());
                     }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            getActivity(), android.R.layout.simple_spinner_item, spinnerItems);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                    // Spinner config
-                    Spinner spinner = (Spinner)dialogView.findViewById(R.id.food_spinner);
-                    spinner.setAdapter(adapter);
-                    spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                            getActivity(), android.R.layout.simple_list_item_1, foodNames);
+
+                    // Listview of foods config
+                    final ListView lv = (ListView)(dialogView.findViewById(android.R.id.list));
+                    lv.setAdapter(adapter);
+                    lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            mSelectedSpinnerFood = spinnerItems.get(position);
-                        }
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-                            mSelectedSpinnerFood = spinnerItems.get(0);
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            mSelectedSpinnerFood = foodNames.get(position);
                         }
                     });
 
@@ -237,15 +234,18 @@ public class MainFragment extends ListFragment {
                     dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            int amount = picker.getValue();
-                            Food selectedFood = new Food(mSelectedSpinnerFood, amount, mDb);
-                            mFoodsEaten.add(selectedFood);
-                            mAdapter.notifyDataSetChanged();
-                            mTotalCals += selectedFood.calories();
-                            mTotalProtein += selectedFood.protein();
-                            mTotalCarbs += selectedFood.carbs();
-                            mTotalFat += selectedFood.fat();
-                            toolbar.setTitle(totalsString());
+                            if (mSelectedSpinnerFood != null) {
+                                int amount = picker.getValue();
+                                Food selectedFood = new Food(mSelectedSpinnerFood, amount, mDb);
+                                mFoodsEaten.add(selectedFood);
+                                mAdapter.notifyDataSetChanged();
+                                mTotalCals += selectedFood.calories();
+                                mTotalProtein += selectedFood.protein();
+                                mTotalCarbs += selectedFood.carbs();
+                                mTotalFat += selectedFood.fat();
+                                toolbar.setTitle(totalsString());
+                                mSelectedSpinnerFood = null;
+                            }
                         }
                     });
 
