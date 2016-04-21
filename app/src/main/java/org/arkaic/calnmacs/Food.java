@@ -23,10 +23,8 @@ public class Food implements Serializable {
     public Food(String foodName, int amount, SQLiteDatabase db) {
         mName = foodName;
         mAmount = amount;
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM " + FoodDbColumns.TABLE_NAME + " WHERE " +
-                        FoodDbColumns.FOOD_NAME_COLUMN + "=\"" + mName + "\"",
-                null);
+        String query = "SELECT * FROM "+FoodDbColumns.TABLE_NAME+" WHERE "+FoodDbColumns.FOOD_NAME_COLUMN+"=?";
+        Cursor cursor = db.rawQuery(query, new String[] {mName});
         if (cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getColumnCount(); i++) {
                 String column = cursor.getColumnName(i);
