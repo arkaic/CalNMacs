@@ -71,7 +71,6 @@ public class FoodDbFragment extends ListFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        final ListView listView = (ListView)view.findViewById(android.R.id.list);
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
         toolbar.setTitle("Food Unit   Carb   Fat    Protein Cal     %");
         toolbar.setTitleTextColor(Color.WHITE);
@@ -84,7 +83,6 @@ public class FoodDbFragment extends ListFragment {
         mCursor = mDb.rawQuery("SELECT * from foods;", null);
         // column names
         String[] fromColumns = {
-                FoodDbColumns.ID_COLUMN,
                 FoodDbColumns.FOOD_NAME_COLUMN,
                 FoodDbColumns.UNIT_COLUMN,
                 FoodDbColumns.FAT_COLUMN,
@@ -94,7 +92,7 @@ public class FoodDbFragment extends ListFragment {
                 FoodDbColumns.RATIO_COLUMN
         };
         // view id's defined in foodrow xml
-        int[] toViews = {R.id._id, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
+        int[] toViews = {R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                 R.id.cals, R.id.proteinCalRatio};
 
         // SimpleCursorAdapter to map db cursor to listview
@@ -106,6 +104,7 @@ public class FoodDbFragment extends ListFragment {
                 toViews,
                 0
         );
+        final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setBackgroundColor(Color.BLACK);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(mAdapter);
@@ -150,23 +149,16 @@ public class FoodDbFragment extends ListFragment {
          * -----------------------------------------------------------------------------------------
          */
 
-        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refresh);
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // make adaptor
-                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-
-        FloatingActionButton closeButton = (FloatingActionButton)getView().findViewById(R.id.quit);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().finish();
-            }
-        });
+        // Doubtful if a refresh is needed
+//        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refresh);
+//        refresh.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // make adaptor
+//                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
+//                mAdapter.notifyDataSetChanged();
+//            }
+//        });
 
         FloatingActionButton addButton = (FloatingActionButton) getView().findViewById(R.id.add);
         addButton.setOnClickListener(new View.OnClickListener() {

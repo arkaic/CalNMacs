@@ -69,6 +69,9 @@ public class Food implements Serializable {
     public int calories() {
         return (int)(mCals * mAmount);
     }
+    public String name() {return mName; }
+    public String unit() {return mUnit; }
+    public double proteinToCalRatio() {return mProteinRatio; }
 
     @Override
     public String toString() {

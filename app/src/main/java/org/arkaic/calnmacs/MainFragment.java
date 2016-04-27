@@ -44,7 +44,7 @@ import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
  */
 public class MainFragment extends ListFragment {
 
-    private ArrayAdapter<String> mAdapter;
+    private MainListAdapter mAdapter;
     private SQLiteDatabase mDb;
     private OnMainFragmentInteractionListener mListener;
     private List<Food> mFoodsEaten = new ArrayList<>();
@@ -107,6 +107,7 @@ public class MainFragment extends ListFragment {
         // todo need to subclass arrayadapter to have it output multiple columns
         // http://stackoverflow.com/questions/11678909/use-array-adapter-with-more-views-in-row-in-listview
 
+
         /* -----------------------------------------------------------------------------------------
          *                                     TOOLBAR CONFIG
          * -----------------------------------------------------------------------------------------
@@ -121,7 +122,7 @@ public class MainFragment extends ListFragment {
          */
 
         // ArrayAdapter to map simple string arrays to
-        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, (List)mFoodsEaten);
+        mAdapter = new MainListAdapter(getActivity(), (List)mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(mAdapter);
@@ -265,14 +266,6 @@ public class MainFragment extends ListFragment {
                 mTotalProtein = 0;
                 toolbar.setTitle(totalsString());
                 mAdapter.notifyDataSetChanged();
-            }
-        });
-
-        FloatingActionButton quitButton = (FloatingActionButton)getView().findViewById(R.id.quit);
-        quitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().finish();
             }
         });
     }
