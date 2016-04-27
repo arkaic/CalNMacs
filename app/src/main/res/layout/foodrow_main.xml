@@ -1,0 +1,62 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:shrinkColumns="*"
+android:stretchColumns="*"
+android:background="#ffffff">
+
+    <TextView
+        android:id="@+id/foodNameMain"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:textColor="#000000"/>
+
+    <TableRow
+        android:id="@+id/statRow"
+        android:layout_width="match_parent"
+        android:background="#ffffff">
+        <TextView
+            android:id="@+id/unitMain"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
+        <TextView
+            android:id="@+id/fatMain"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#88bb44"/>
+        <TextView
+            android:id="@+id/carbsMain"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#0000ff"/>
+        <TextView
+            android:id="@+id/proteinMain"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#ff0000"/>
+        <TextView
+            android:id="@+id/proteinCalRatioMain"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="0"
+            android:textColor="#000000"/>
+    </TableRow>
+
+    <TextView
+        android:id="@+id/calsMain"
+        android:textSize="20sp"
+        android:textStyle="italic|bold"
+        android:textColor="#000000"/>
+
+</TableLayout>
