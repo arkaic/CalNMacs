@@ -11,8 +11,11 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -325,8 +329,15 @@ public class MainFragment extends ListFragment {
         void onMainFragmentInteraction(Uri uri);
     }
 
-    private String totalsString() {
-        String retVal = mTotalCals + " kcals: " + mTotalFat + "g F   " + mTotalCarbs + "g C   " + mTotalProtein + "g P";
-        return retVal;
+    private Spanned totalsString() {
+        String fatColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.fat_color) & 0x00ffffff);
+        String carbColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.carb_color) & 0x00ffffff);
+        String proteinColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.protein_color) & 0x00ffffff);
+        String calColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.cal_color) & 0x00ffffff);
+        String retVal = MessageFormat.format("<font color=#{0}>{1} cal</font>&nbsp;&nbsp;<font color=#{2}>{3}g</font>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=#{4}>{5}g</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                "<font color=#{6}>{7}g</font>",
+                calColor, mTotalCals, fatColor, mTotalFat, carbColor, mTotalCarbs, proteinColor, mTotalProtein);
+        return Html.fromHtml(retVal);
     }
 }

@@ -29,21 +29,21 @@ android:background="#ffffff">
             android:layout_gravity="left"
             android:layout_width="0dp"
             android:layout_weight="0"
-            android:textColor="#88bb44"/>
+            android:textColor="@color/fat_color"/>
         <TextView
             android:id="@+id/carbsMain"
             android:textSize="20sp"
             android:layout_gravity="left"
             android:layout_width="0dp"
             android:layout_weight="0"
-            android:textColor="#0000ff"/>
+            android:textColor="@color/carb_color"/>
         <TextView
             android:id="@+id/proteinMain"
             android:textSize="20sp"
             android:layout_gravity="left"
             android:layout_width="0dp"
             android:layout_weight="0"
-            android:textColor="#ff0000"/>
+            android:textColor="@color/protein_color"/>
         <TextView
             android:id="@+id/proteinCalRatioMain"
             android:textSize="20sp"
