@@ -56,7 +56,7 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
         if (getArguments() != null)
