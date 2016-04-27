@@ -39,7 +39,7 @@ public class MainListAdapter extends ArrayAdapter<Food> {
             TextView ratioView = (TextView)v.findViewById(R.id.proteinCalRatioMain);
 
             foodNameView.setText(item.name());
-            unitView.setText(item.unit());
+            unitView.setText(item.amount() + " " + item.unit());
             fatView.setText((Integer.toString(item.fat())) + "g");
             carbsView.setText(Integer.toString(item.carbs()) + "g");
             proteinView.setText(Integer.toString(item.protein()) + "g");
