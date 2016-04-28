@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -16,9 +17,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -205,6 +208,7 @@ public class MainFragment extends ListFragment {
                     dialogBuilder.setView(dialogView);
                     dialogBuilder.setTitle("Add food");
 
+
                     // Populate list with food names and make adapter for spinner
                     final List<String> foodNames = new ArrayList<>();
                     Cursor foodNameCursor = mDb.rawQuery(
@@ -254,7 +258,17 @@ public class MainFragment extends ListFragment {
                         }
                     });
 
-                    dialogBuilder.create().show();
+                    AlertDialog dialog = dialogBuilder.create();
+                    dialog.show();
+
+                    // Set fixed dialog size
+                    WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+                    Display dis = wm.getDefaultDisplay();
+                    Point pt = new Point();
+                    dis.getSize(pt);
+                    int width = pt.x;
+                    int height = pt.y;
+                    dialog.getWindow().setLayout(width, height - 700);
                 }
             }
         });
