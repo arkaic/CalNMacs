@@ -18,7 +18,7 @@ public class MainListAdapter extends ArrayAdapter<Food> {
     private LayoutInflater inflater;
 
     public MainListAdapter(Context context, List<Food> objects) {
-        super(context, 0, objects);
+        super(context, android.R.layout.simple_list_item_1, objects);
         this.objects = objects;
         this.inflater = LayoutInflater.from(context);
     }

@@ -124,14 +124,14 @@ public class MainFragment extends ListFragment {
         toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
-         *                                     LISTVIEW CONFIG
+         *                                     MAIN LISTVIEW CONFIG
          * -----------------------------------------------------------------------------------------
          */
 
         // ArrayAdapter to map simple string arrays to
         mAdapter = new MainListAdapter(getActivity(), (List)mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(mAdapter);
         View padding = new View(getActivity());
         padding.setMinimumHeight(150);

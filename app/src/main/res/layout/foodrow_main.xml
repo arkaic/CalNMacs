@@ -2,8 +2,7 @@
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:shrinkColumns="*"
-android:stretchColumns="*"
-android:background="#ffffff">
+android:stretchColumns="*">
 
     <TextView
         android:id="@+id/foodNameMain"
@@ -14,8 +13,7 @@ android:background="#ffffff">
 
     <TableRow
         android:id="@+id/statRow"
-        android:layout_width="match_parent"
-        android:background="#ffffff">
+        android:layout_width="match_parent">
         <TextView
             android:id="@+id/unitMain"
             android:textSize="20sp"
