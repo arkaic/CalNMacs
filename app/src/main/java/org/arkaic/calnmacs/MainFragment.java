@@ -18,16 +18,17 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -120,15 +121,13 @@ public class MainFragment extends ListFragment {
          * -----------------------------------------------------------------------------------------
          */
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.main_toolbar);
-        toolbar.setTitle(totalsString());
+        toolbar.setTitle(totalsSpannedString());
         toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
          *                                     MAIN LISTVIEW CONFIG
          * -----------------------------------------------------------------------------------------
          */
-
-        // ArrayAdapter to map simple string arrays to
         mAdapter = new MainListAdapter(getActivity(), (List)mFoodsEaten);
         final ListView listView = (ListView)view.findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -152,7 +151,7 @@ public class MainFragment extends ListFragment {
                     builder.setView(dialogView);
                     builder.setTitle("Edit Food");
 
-                    final NumberPicker picker = (NumberPicker)dialogView.findViewById(R.id.edit_amount_number_picker);
+                    final NumberPicker picker = (NumberPicker) dialogView.findViewById(R.id.edit_amount_number_picker);
                     picker.setMinValue(0);
                     picker.setMaxValue(MAX_PICKER_VALUE);
                     picker.setWrapSelectorWheel(false);
@@ -172,7 +171,7 @@ public class MainFragment extends ListFragment {
                                 mTotalCarbs += selectedFood.carbs();
                                 mTotalFat += selectedFood.fat();
                                 mAdapter.notifyDataSetChanged();
-                                toolbar.setTitle(totalsString());
+                                toolbar.setTitle(totalsSpannedString());
                             }
                         }
                     });
@@ -185,7 +184,7 @@ public class MainFragment extends ListFragment {
                             mTotalFat -= selectedFood.fat();
                             mFoodsEaten.remove(index);
                             mAdapter.notifyDataSetChanged();
-                            toolbar.setTitle(totalsString());
+                            toolbar.setTitle(totalsSpannedString());
                         }
                     });
                     builder.show();
@@ -194,7 +193,7 @@ public class MainFragment extends ListFragment {
         });
 
         /* -----------------------------------------------------------------------------------------
-         *                                     ADD FOOD BUTTON CONFIG
+         *                                     ADD FOOD BUTTON LISTENING
          * -----------------------------------------------------------------------------------------
          */
         FloatingActionButton addButton = (FloatingActionButton)getView().findViewById(R.id.add);
@@ -215,7 +214,8 @@ public class MainFragment extends ListFragment {
                             "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME,
                             null);
                     if (foodNameCursor.moveToFirst()) {
-                        do { foodNames.add(foodNameCursor.getString(0));
+                        do {
+                            foodNames.add(foodNameCursor.getString(0));
                         } while (foodNameCursor.moveToNext());
                     }
 
@@ -223,7 +223,7 @@ public class MainFragment extends ListFragment {
                             getActivity(), android.R.layout.simple_list_item_1, foodNames);
 
                     // Listview of foods config
-                    final ListView lv = (ListView)(dialogView.findViewById(android.R.id.list));
+                    final ListView lv = (ListView) (dialogView.findViewById(android.R.id.list));
                     lv.setAdapter(adapter);
                     lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                     lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -234,7 +234,7 @@ public class MainFragment extends ListFragment {
                     });
 
                     // Number picker config
-                    final NumberPicker picker = (NumberPicker)dialogView.findViewById(R.id.amount_number_picker);
+                    final NumberPicker picker = (NumberPicker) dialogView.findViewById(R.id.amount_number_picker);
                     picker.setMinValue(0);
                     picker.setMaxValue(MAX_PICKER_VALUE);
                     picker.setWrapSelectorWheel(false);
@@ -252,7 +252,7 @@ public class MainFragment extends ListFragment {
                                 mTotalProtein += selectedFood.protein();
                                 mTotalCarbs += selectedFood.carbs();
                                 mTotalFat += selectedFood.fat();
-                                toolbar.setTitle(totalsString());
+                                toolbar.setTitle(totalsSpannedString());
                                 mSelectedSpinnerFood = null;
                             }
                         }
@@ -273,17 +273,36 @@ public class MainFragment extends ListFragment {
             }
         });
 
+        /* -----------------------------------------------------------------------------------------
+                                                 CLEAR ALL BUTTON
+         * -----------------------------------------------------------------------------------------
+         */
         FloatingActionButton clearAllButton = (FloatingActionButton)getView().findViewById(R.id.clearAll);
         clearAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFoodsEaten.clear();
-                mTotalCals = 0;
-                mTotalCarbs = 0;
-                mTotalFat = 0;
-                mTotalProtein = 0;
-                toolbar.setTitle(totalsString());
-                mAdapter.notifyDataSetChanged();
+                // Create dialog box
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                View dialogView = getLayoutInflater(savedInstanceState).inflate(android.R.layout.select_dialog_item, null);
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.setTitle("Clear all?");
+
+                // OK button config
+                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mFoodsEaten.clear();
+                        mTotalCals = 0;
+                        mTotalCarbs = 0;
+                        mTotalFat = 0;
+                        mTotalProtein = 0;
+                        toolbar.setTitle(totalsSpannedString());
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+
+                AlertDialog dialog = dialogBuilder.create();
+                dialog.show();
             }
         });
     }
@@ -343,7 +362,8 @@ public class MainFragment extends ListFragment {
         void onMainFragmentInteraction(Uri uri);
     }
 
-    private Spanned totalsString() {
+    private Spanned totalsSpannedString() {
+        // bitwise AND removes alpha values and leaving just rgb
         String fatColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.fat_color) & 0x00ffffff);
         String carbColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.carb_color) & 0x00ffffff);
         String proteinColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.protein_color) & 0x00ffffff);
