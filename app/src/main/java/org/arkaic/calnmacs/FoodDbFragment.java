@@ -1,6 +1,7 @@
 package org.arkaic.calnmacs;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -70,7 +71,7 @@ public class FoodDbFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, final Bundle savedInstanceState) {
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
         toolbar.setTitle("Food Unit   Carb   Fat    Protein Cal     %");
         toolbar.setTitleTextColor(Color.WHITE);
@@ -130,7 +131,7 @@ public class FoodDbFragment extends ListFragment {
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
                     alertDialog.setTitle(name);
                     alertDialog.setMessage(MessageFormat.format(
-                            "ID: {0}\nFood: {1}\nunit: {2}\ncarbs: {3}\nfat: {4}\nprotein: {5}\ncalories: {6}\nprotein->cal ratio: {7}",
+                            "Food: {0}\nunit: {1}\ncarbs: {2}\nfat: {3}\nprotein: {4}\ncalories: {5}\nprotein->cal ratio: {6}",
                             name, unit, carbs, fat, prot, cals, protcals));
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
@@ -164,7 +165,48 @@ public class FoodDbFragment extends ListFragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO open a dialogue for adding custom food
+                // open a dialogue for adding custom food
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                View diaView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_fooddb, null);
+                builder.setView(diaView);
+                builder.setTitle("Add a new food to the food list");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO implement food add
+
+                        // test
+                        String name = "testfood";
+                        String unit = "unit";
+                        int carbs = 1;
+                        int fat = 2;
+                        int protein = 3;
+                        int cals = 4;
+                        double ratio = .233;
+
+                        ContentValues cv = new ContentValues();
+                        cv.put(FoodDbColumns.FOOD_NAME_COLUMN, name);
+                        cv.put(FoodDbColumns.UNIT_COLUMN, unit);
+                        cv.put(FoodDbColumns.CARBS_COLUMN, carbs);
+                        cv.put(FoodDbColumns.FAT_COLUMN, fat);
+                        cv.put(FoodDbColumns.PROTEIN_COLUMN, protein);
+                        cv.put(FoodDbColumns.CALS_COLUMN, cals);
+                        cv.put(FoodDbColumns.RATIO_COLUMN, ratio);
+                        mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
+                        mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                builder.create().show();
             }
         });
     }
