@@ -11,6 +11,8 @@ import java.util.List;
 
 /**
  * Created by henry on 3/11/16.
+ *
+ * A custom adapter for the main page's listview so that each item can handle multiple text views.
  */
 public class MainListAdapter extends ArrayAdapter<Food> {
 
@@ -30,6 +32,8 @@ public class MainListAdapter extends ArrayAdapter<Food> {
             v = LayoutInflater.from(getContext()).inflate(R.layout.foodrow_main, parent, false);
 
         if (item != null) {
+            // Gather the textviews and set their texts
+
             TextView foodNameView = (TextView)v.findViewById(R.id.foodNameMain);
             TextView unitView = (TextView)v.findViewById(R.id.unitMain);
             TextView fatView = (TextView)v.findViewById(R.id.fatMain);
