@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableRow;
@@ -73,7 +74,7 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, final Bundle savedInstanceState) {
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
-        toolbar.setTitle("Food Unit   Carb   Fat    Protein Cal     %");
+        toolbar.setTitle("Food Unit    Carb    Fat    Protein   Cal     Ratio");
         toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
@@ -167,35 +168,40 @@ public class FoodDbFragment extends ListFragment {
             public void onClick(View view) {
                 // open a dialogue for adding custom food
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                View diaView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_fooddb, null);
+                final View diaView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_fooddb, null);
                 builder.setView(diaView);
                 builder.setTitle("Add a new food to the food list");
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO implement food add
+                        // Check if any text fields are empty
+                        String name = ((EditText)diaView.findViewById(R.id.name_add)).getText().toString();
+                        String unit = ((EditText)diaView.findViewById(R.id.unit_type_add)).getText().toString();
+                        String carbStr = ((EditText)diaView.findViewById(R.id.carb_add)).getText().toString();
+                        String fatStr = ((EditText)diaView.findViewById(R.id.fat_add)).getText().toString();
+                        String proteinStr = ((EditText)diaView.findViewById(R.id.protein_add)).getText().toString();
+                        String calsStr = ((EditText)diaView.findViewById(R.id.calorie_add)).getText().toString();
 
-                        // test
-                        String name = "testfood";
-                        String unit = "unit";
-                        int carbs = 1;
-                        int fat = 2;
-                        int protein = 3;
-                        int cals = 4;
-                        double ratio = .233;
+                        if (name.trim().length() == 0 || unit.trim().length() == 0 ||
+                                carbStr.trim().length() == 0 || fatStr.trim().length() == 0 ||
+                                proteinStr.trim().length() == 0 || calsStr.trim().length() == 0) {
+                            // popup dialog warning but do not leave alertdialog
+                        } else {
+                            ContentValues cv = new ContentValues();
+                            cv.put(FoodDbColumns.FOOD_NAME_COLUMN, name);
+                            cv.put(FoodDbColumns.UNIT_COLUMN, unit);
+                            cv.put(FoodDbColumns.CARBS_COLUMN, Double.parseDouble(carbStr));
+                            cv.put(FoodDbColumns.FAT_COLUMN, Double.parseDouble(fatStr));
+                            cv.put(FoodDbColumns.PROTEIN_COLUMN, Double.parseDouble(proteinStr));
+                            cv.put(FoodDbColumns.CALS_COLUMN, Double.parseDouble(calsStr));
+                            cv.put(FoodDbColumns.RATIO_COLUMN,
+                                   Double.parseDouble(proteinStr) * 4 / Double.parseDouble(calsStr));
+                            mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
+                            mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
+                            mAdapter.notifyDataSetChanged();
+                        }
 
-                        ContentValues cv = new ContentValues();
-                        cv.put(FoodDbColumns.FOOD_NAME_COLUMN, name);
-                        cv.put(FoodDbColumns.UNIT_COLUMN, unit);
-                        cv.put(FoodDbColumns.CARBS_COLUMN, carbs);
-                        cv.put(FoodDbColumns.FAT_COLUMN, fat);
-                        cv.put(FoodDbColumns.PROTEIN_COLUMN, protein);
-                        cv.put(FoodDbColumns.CALS_COLUMN, cals);
-                        cv.put(FoodDbColumns.RATIO_COLUMN, ratio);
-                        mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
-                        mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
-                        mAdapter.notifyDataSetChanged();
                     }
                 });
 
