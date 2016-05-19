@@ -71,7 +71,7 @@ public class Food implements Serializable {
     }
     public String name() {return mName; }
     public String unit() {return mUnit; }
-    public double proteinToCalRatio() {return mProteinRatio; }
+    public double proteinToCalRatio() {return Math.floor(mProteinRatio * 1e4) / 1e4 * 100; }
 
     @Override
     public String toString() {
