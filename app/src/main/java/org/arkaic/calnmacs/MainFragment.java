@@ -211,7 +211,8 @@ public class MainFragment extends ListFragment {
                     // Populate list with food names and make adapter for spinner
                     final List<String> foodNames = new ArrayList<>();
                     Cursor foodNameCursor = mDb.rawQuery(
-                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME,
+                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME +
+                                    " ORDER BY " + FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;",
                             null);
                     if (foodNameCursor.moveToFirst()) {
                         do {
