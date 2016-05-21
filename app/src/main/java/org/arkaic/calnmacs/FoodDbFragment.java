@@ -196,9 +196,10 @@ public class FoodDbFragment extends ListFragment {
                             cv.put(FoodDbColumns.PROTEIN_COLUMN, Double.parseDouble(proteinStr));
                             cv.put(FoodDbColumns.CALS_COLUMN, Double.parseDouble(calsStr));
                             cv.put(FoodDbColumns.RATIO_COLUMN,
-                                   Double.parseDouble(proteinStr) * 4 / Double.parseDouble(calsStr));
+                                    Double.parseDouble(proteinStr) * 4 / Double.parseDouble(calsStr));
                             mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
-                            mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
+                            mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods ORDER BY " +
+                                    FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null));
                             mAdapter.notifyDataSetChanged();
                         }
 
