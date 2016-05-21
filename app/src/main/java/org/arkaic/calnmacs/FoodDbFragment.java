@@ -24,8 +24,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
+import org.w3c.dom.Text;
 
 
 /**
@@ -114,10 +117,15 @@ public class FoodDbFragment extends ListFragment {
         View padding = new View(getActivity());
         padding.setMinimumHeight(150);
         listView.addHeaderView(padding);
+
+        /* -----------------------------------------------------------------------------------------
+         *                                   ON CLICKING A FOOD LISTENER
+         * -----------------------------------------------------------------------------------------
+         */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // view is the toplevel object type defined in the table row xml
+                // TODO find a way to get primary key of this chosen food
                 TableRow foodRow = ((TableRow) view.findViewById(R.id.foodRow));
                 CharSequence name = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
                 CharSequence unit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
@@ -127,19 +135,33 @@ public class FoodDbFragment extends ListFragment {
                 CharSequence cals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
                 CharSequence protcals = ((TextView) foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
-                // Bring up message dialog displaying information
+                // Bring up a dialog for options to delete and/or modify the food
                 if (getActivity() != null) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                    alertDialog.setTitle(name);
-                    alertDialog.setMessage(MessageFormat.format(
-                            "Food: {0}\nunit: {1}\ncarbs: {2}\nfat: {3}\nprotein: {4}\ncalories: {5}\nprotein->cal ratio: {6}",
-                            name, unit, carbs, fat, prot, cals, protcals));
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("test");
+
+                    final CharSequence[] items = {"Delete?"};
+                    final List toDelete = new ArrayList();  // a hack for representing a boolean flag
+                    builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int indexSelected, boolean isSelected) {
+                            if (isSelected)
+                                toDelete.add(1);
+                            else
+                                toDelete.clear();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
+                                    if (!toDelete.isEmpty()) {
+                                        // TODO delete from database and reflect changes to db and main page
+                                    }
                                 }
                             });
+
                     alertDialog.show();
                 }
             }
