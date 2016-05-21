@@ -151,17 +151,6 @@ public class FoodDbFragment extends ListFragment {
          * -----------------------------------------------------------------------------------------
          */
 
-        // Doubtful if a refresh is needed
-//        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refresh);
-//        refresh.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // make adaptor
-//                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
-//                mAdapter.notifyDataSetChanged();
-//            }
-//        });
-
         FloatingActionButton addButton = (FloatingActionButton) getView().findViewById(R.id.add);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,10 +178,12 @@ public class FoodDbFragment extends ListFragment {
                                 String proteinStr = ((EditText)diaView.findViewById(R.id.protein_add)).getText().toString();
                                 String calsStr = ((EditText)diaView.findViewById(R.id.calorie_add)).getText().toString();
 
+                                // Retrieve values from input and add food to db only if ALL input
+                                // fields are filled in, then close dialog
                                 if (name.trim().length() == 0 || unit.trim().length() == 0 ||
                                         carbStr.trim().length() == 0 || fatStr.trim().length() == 0 ||
                                         proteinStr.trim().length() == 0 || calsStr.trim().length() == 0) {
-                                    // TODO popup dialog warning but do not leave alertdialog
+                                    // TODO give a quick warning, but not a popup
                                 } else {
                                     ContentValues cv = new ContentValues();
                                     cv.put(FoodDbColumns.FOOD_NAME_COLUMN, name);
@@ -213,20 +204,6 @@ public class FoodDbFragment extends ListFragment {
                         });
                     }
                 });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                    }
-//                });
 
                 dia.show();
             }
