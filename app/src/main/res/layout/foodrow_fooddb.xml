@@ -6,6 +6,19 @@
     android:stretchColumns="*"
     android:background="#ffffff">
 
+    <!--Need to keep track of database id of food in this row-->
+    <LinearLayout android:id="@+id/hidden_layout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/foodPk"
+            android:visibility="gone"/>
+    </LinearLayout>
+
     <TableRow
         android:id="@+id/foodRow"
         android:layout_width="match_parent"

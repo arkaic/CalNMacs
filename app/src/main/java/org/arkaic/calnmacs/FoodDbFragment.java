@@ -88,6 +88,7 @@ public class FoodDbFragment extends ListFragment {
         mCursor = mDb.rawQuery("SELECT * from foods;", null);
         // column names
         String[] fromColumns = {
+                FoodDbColumns.ID_COLUMN,
                 FoodDbColumns.FOOD_NAME_COLUMN,
                 FoodDbColumns.UNIT_COLUMN,
                 FoodDbColumns.FAT_COLUMN,
@@ -97,7 +98,7 @@ public class FoodDbFragment extends ListFragment {
                 FoodDbColumns.RATIO_COLUMN
         };
         // view id's defined in foodrow xml
-        int[] toViews = {R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
+        int[] toViews = {R.id.foodPk, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                 R.id.cals, R.id.proteinCalRatio};
 
         // SimpleCursorAdapter to map db cursor to listview
@@ -125,23 +126,24 @@ public class FoodDbFragment extends ListFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO find a way to get primary key of this chosen food
-                TableRow foodRow = ((TableRow) view.findViewById(R.id.foodRow));
+                View hiddenView = view.findViewById(R.id.hidden_layout);
+                int foodid = Integer.parseInt(((TextView) hiddenView.findViewById(R.id.foodPk)).getText().toString());
+
+                View foodRow = view.findViewById(R.id.foodRow);
                 CharSequence name = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
                 CharSequence unit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
                 CharSequence carbs = ((TextView) foodRow.findViewById(R.id.carbs)).getText();
                 CharSequence fat = ((TextView) foodRow.findViewById(R.id.fat)).getText();
                 CharSequence prot = ((TextView) foodRow.findViewById(R.id.protein)).getText();
                 CharSequence cals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
-                CharSequence protcals = ((TextView) foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
                 // Bring up a dialog for options to delete and/or modify the food
                 if (getActivity() != null) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("test");
+                    builder.setTitle(name);
 
                     final CharSequence[] items = {"Delete?"};
-                    final List toDelete = new ArrayList();  // a hack for representing a boolean flag
+                    final List toDelete = new ArrayList();  // bool flag: empty == false
                     builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int indexSelected, boolean isSelected) {
@@ -153,14 +155,17 @@ public class FoodDbFragment extends ListFragment {
                     });
 
                     AlertDialog alertDialog = builder.create();
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (!toDelete.isEmpty()) {
-                                        // TODO delete from database and reflect changes to db and main page
-                                    }
-                                }
-                            });
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!toDelete.isEmpty()) {
+                                // TODO delete from database and reflect changes to db and main page
+                                // TODO using foodid
+                            } else {
+                                // TODO perform modifications if input. Change protein-calorie ratio
+                                // TODO if protein or calories were changed. reflect changes as well
+                            }
+                        }
+                    });
 
                     alertDialog.show();
                 }
