@@ -85,7 +85,8 @@ public class FoodDbFragment extends ListFragment {
          * -----------------------------------------------------------------------------------------
          */
 
-        mCursor = mDb.rawQuery("SELECT * from foods;", null);
+        mCursor = mDb.rawQuery("SELECT * FROM " + FoodDbColumns.TABLE_NAME + " ORDER BY " +
+                FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null);
         // column names
         String[] fromColumns = {
                 FoodDbColumns.ID_COLUMN,
@@ -222,8 +223,8 @@ public class FoodDbFragment extends ListFragment {
                                     cv.put(FoodDbColumns.RATIO_COLUMN,
                                             Double.parseDouble(proteinStr) * 4 / Double.parseDouble(calsStr));
                                     mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
-                                    mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods ORDER BY " +
-                                            FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null));
+                                    mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM " + FoodDbColumns.TABLE_NAME +
+                                            " ORDER BY " + FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null));
                                     mAdapter.notifyDataSetChanged();
                                     dia.dismiss();
                                 }
