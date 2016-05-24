@@ -128,7 +128,7 @@ public class FoodDbFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 View hiddenView = view.findViewById(R.id.hidden_layout);
-                int foodid = Integer.parseInt(((TextView) hiddenView.findViewById(R.id.foodPk)).getText().toString());
+                final int foodid = Integer.parseInt(((TextView) hiddenView.findViewById(R.id.foodPk)).getText().toString());
 
                 View foodRow = view.findViewById(R.id.foodRow);
                 CharSequence name = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
@@ -159,8 +159,9 @@ public class FoodDbFragment extends ListFragment {
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (!toDelete.isEmpty()) {
-                                // TODO delete from database and reflect changes to db and main page
-                                // TODO using foodid
+                                mDb.delete(FoodDbColumns.TABLE_NAME, FoodDbColumns.ID_COLUMN + "=" + foodid, null);
+                                refreshList();
+                                // TODO reflect changes back to fooddb
                             } else {
                                 // TODO perform modifications if input. Change protein-calorie ratio
                                 // TODO if protein or calories were changed. reflect changes as well
@@ -175,7 +176,7 @@ public class FoodDbFragment extends ListFragment {
 
 
         /* -----------------------------------------------------------------------------------------
-         *                                     BUTTON CONFIG
+         *                                     ADD BUTTON CONFIG
          * -----------------------------------------------------------------------------------------
          */
 
@@ -223,9 +224,7 @@ public class FoodDbFragment extends ListFragment {
                                     cv.put(FoodDbColumns.RATIO_COLUMN,
                                             Double.parseDouble(proteinStr) * 4 / Double.parseDouble(calsStr));
                                     mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
-                                    mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM " + FoodDbColumns.TABLE_NAME +
-                                            " ORDER BY " + FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null));
-                                    mAdapter.notifyDataSetChanged();
+                                    refreshList();
                                     dia.dismiss();
                                 }
                             }
@@ -238,8 +237,14 @@ public class FoodDbFragment extends ListFragment {
         });
     }
 
+    // Refresh the food database display
+    private void refreshList() {
+        mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM " + FoodDbColumns.TABLE_NAME + " ORDER BY " +
+                FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null));
+        mAdapter.notifyDataSetChanged();
+    }
 
-        @Override
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFoodDbFragmentInteractionListener) {
