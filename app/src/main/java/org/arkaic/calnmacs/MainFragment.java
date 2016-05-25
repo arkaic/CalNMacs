@@ -344,8 +344,8 @@ public class MainFragment extends ListFragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         mListener = null;
+        super.onDetach();
     }
 
     /**
@@ -361,6 +361,23 @@ public class MainFragment extends ListFragment {
     public interface OnMainFragmentInteractionListener {
         // TODO: Update argument type and name
         void onMainFragmentInteraction(Uri uri);
+    }
+
+    public void deleteFoodById(int id) {
+        int i = 0;
+        List indicesToDelete = new ArrayList();
+        for (Food food : mFoodsEaten) {
+            if (food.id() == id) {
+                mTotalCals -= food.calories();
+                mTotalProtein -= food.protein();
+                mTotalCarbs -= food.carbs();
+                mTotalFat -= food.fat();
+                mFoodsEaten.remove(i);
+                mAdapter.notifyDataSetChanged();
+                ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
+            }
+            i++;
+        }
     }
 
     private Spanned totalsSpannedString() {

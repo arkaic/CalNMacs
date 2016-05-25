@@ -161,7 +161,7 @@ public class FoodDbFragment extends ListFragment {
                             if (!toDelete.isEmpty()) {
                                 mDb.delete(FoodDbColumns.TABLE_NAME, FoodDbColumns.ID_COLUMN + "=" + foodid, null);
                                 refreshList();
-                                // TODO reflect changes back to fooddb
+                                mListener.onFoodDelete(foodid);  // reflect changes back to fooddb
                             } else {
                                 // TODO perform modifications if input. Change protein-calorie ratio
                                 // TODO if protein or calories were changed. reflect changes as well
@@ -257,8 +257,8 @@ public class FoodDbFragment extends ListFragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         mListener = null;
+        super.onDetach();
         mCursor.close();
     }
 
@@ -278,6 +278,6 @@ public class FoodDbFragment extends ListFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFoodDbFragmentInteractionListener {
-        void onFoodDbFragmentInteraction(Uri uri);
+        void onFoodDelete(int id);
     }
 }
