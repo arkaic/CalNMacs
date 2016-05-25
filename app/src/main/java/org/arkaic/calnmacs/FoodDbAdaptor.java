@@ -11,12 +11,12 @@ import android.widget.SimpleCursorAdapter;
 /**
  * Created by henry on 2/25/16.
  */
-public class FoodListAdaptor extends SimpleCursorAdapter {
+public class FoodDbAdaptor extends SimpleCursorAdapter {
 
     private Context mContext;
     private int mLayout;
 
-    public FoodListAdaptor(Context context, int layout, Cursor cursor, String[] fromCols, int[] toViews, int flags) {
+    public FoodDbAdaptor(Context context, int layout, Cursor cursor, String[] fromCols, int[] toViews, int flags) {
         super(context, layout, cursor, fromCols, toViews, flags);
         this.mContext = context;
         this.mLayout = layout;

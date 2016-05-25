@@ -211,7 +211,8 @@ public class MainFragment extends ListFragment {
                     // Populate list with food names and make adapter for spinner
                     final List<String> foodNames = new ArrayList<>();
                     Cursor foodNameCursor = mDb.rawQuery(
-                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME,
+                            "SELECT " + FoodDbColumns.FOOD_NAME_COLUMN + " FROM " + FoodDbColumns.TABLE_NAME +
+                                    " ORDER BY " + FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;",
                             null);
                     if (foodNameCursor.moveToFirst()) {
                         do {
@@ -343,8 +344,8 @@ public class MainFragment extends ListFragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         mListener = null;
+        super.onDetach();
     }
 
     /**
@@ -360,6 +361,33 @@ public class MainFragment extends ListFragment {
     public interface OnMainFragmentInteractionListener {
         // TODO: Update argument type and name
         void onMainFragmentInteraction(Uri uri);
+    }
+
+    /**
+     * Called from MainActivity when FoodDbFragment needs to signal this Fragment to update the
+     * list of foods eaten after a food has been deleted from the database
+     */
+    public void deleteFoodById(int id) {
+        List<Integer> indicesToDelete = new ArrayList<>();
+        int i = 0;
+
+        // Track the index of the food if exists in main page's list of eaten foods and update totals
+        for (Food food : mFoodsEaten) {
+            if (food.id() == id) {
+                mTotalCals -= food.calories();
+                mTotalProtein -= food.protein();
+                mTotalCarbs -= food.carbs();
+                mTotalFat -= food.fat();
+                indicesToDelete.add(0, i);  // stack indices
+            }
+            i++;
+        }
+
+        // Now remove foods backwards
+        for (int index : indicesToDelete)
+            mFoodsEaten.remove(index);
+        mAdapter.notifyDataSetChanged();
+        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
     }
 
     private Spanned totalsSpannedString() {

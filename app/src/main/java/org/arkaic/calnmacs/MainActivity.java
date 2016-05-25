@@ -1,5 +1,6 @@
 package org.arkaic.calnmacs;
 
+import android.app.ListFragment;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.ViewGroup;
 
 import org.arkaic.calnmacs.FoodDbFragment.OnFoodDbFragmentInteractionListener;
 import org.arkaic.calnmacs.MainFragment.OnMainFragmentInteractionListener;
@@ -31,19 +34,16 @@ public class MainActivity extends AppCompatActivity
 
         // adapter setting
         mPager = (ViewPager)findViewById(R.id.pager);
-        mPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
+        mPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), mPager));
     }
 
     @Override
-    public void onFoodDbFragmentInteraction(Uri uri) {
-        // TODO implement interaction of fragment and any needed information passing to this activity
-        // and to any other fragments this activity may need to pass info to.
-        // http://developer.android.com/training/basics/fragments/communicating.html
-        // In fragment's onAttach() call, it will assign reference to this Activity casted as the
-        // interface. Then in fragment.onButtonClick(), it'll handle the button click by calling
-        // the implemented method(s) of the referenced Activity.
-
-        // use cases: deletion or addition of foods into the foodlist
+    public void onFoodDelete(int id) {
+        MainFragment mainFragment = (MainFragment)(((MyFragmentPagerAdapter)mPager.getAdapter()).getFragment(0));
+        if (mainFragment != null)
+            mainFragment.deleteFoodById(id);
+        else
+            Log.w("**** MY LOGS ****", "mainFragment is null!");
     }
 
     @Override
@@ -54,23 +54,47 @@ public class MainActivity extends AppCompatActivity
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        public MyFragmentPagerAdapter(FragmentManager fm) {
+        private ViewPager mPager;
+        private int mCount = 0;
+
+        public MyFragmentPagerAdapter(FragmentManager fm, ViewPager pager) {
             super(fm);
+            mPager = pager;
         }
 
         @Override
         public int getCount() {
-            return DUMMY_NUM_ITEMS;
+            return mCount;
         }
 
         @Override
         public Fragment getItem(int position) {
-            // Called when adapter needs a fragment that doesn't exist in the FragmentManager
+            // Called when adapter needs a fragment that doesn't exist in the FragmentManager.
+            // Should NOT be touched. As it stands, this is only called on app startup when all
+            // fragments are being created
+            mCount++;
             switch(position) {
                 case 0:  return MainFragment.newInstance(position);
                 case 1:  return FoodDbFragment.newInstance(position);
                 default: return MainFragment.newInstance(position);
             }
+        }
+
+        /**
+         *  When fragments need to communicate, this will be called. First, Fragment A notifies this
+         *  MainActivity instance through the interface implementation. Then the activity instance
+         *  shall call this function to retrieve the fragment to notify.
+         *  position = 0 for MainFragment
+         *  position = 1 for FoodDbFragment
+         */
+        public Fragment getFragment(int position) {
+            return getSupportFragmentManager().findFragmentByTag(makeFragmentName(mPager.getId(), position));
+        }
+
+        // It's the same as the private function in the super class, implying that the fragment's
+        // name (tag) already exists
+        private String makeFragmentName(int viewId, int index) {
+            return "android:switcher:" + viewId + ":" + index;
         }
     }
 

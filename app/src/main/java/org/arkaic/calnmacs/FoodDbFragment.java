@@ -1,6 +1,7 @@
 package org.arkaic.calnmacs;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -16,14 +17,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
+import org.w3c.dom.Text;
 
 
 /**
@@ -70,9 +75,9 @@ public class FoodDbFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, final Bundle savedInstanceState) {
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
-        toolbar.setTitle("Food Unit   Carb   Fat    Protein Cal     %");
+        toolbar.setTitle("Food Unit    Carb    Fat    Protein   Cal     Ratio");
         toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
@@ -80,9 +85,11 @@ public class FoodDbFragment extends ListFragment {
          * -----------------------------------------------------------------------------------------
          */
 
-        mCursor = mDb.rawQuery("SELECT * from foods;", null);
+        mCursor = mDb.rawQuery("SELECT * FROM " + FoodDbColumns.TABLE_NAME + " ORDER BY " +
+                FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null);
         // column names
         String[] fromColumns = {
+                FoodDbColumns.ID_COLUMN,
                 FoodDbColumns.FOOD_NAME_COLUMN,
                 FoodDbColumns.UNIT_COLUMN,
                 FoodDbColumns.FAT_COLUMN,
@@ -92,7 +99,7 @@ public class FoodDbFragment extends ListFragment {
                 FoodDbColumns.RATIO_COLUMN
         };
         // view id's defined in foodrow xml
-        int[] toViews = {R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
+        int[] toViews = {R.id.foodPk, R.id.foodName, R.id.unit, R.id.fat, R.id.carbs, R.id.protein,
                 R.id.cals, R.id.proteinCalRatio};
 
         // SimpleCursorAdapter to map db cursor to listview
@@ -112,32 +119,56 @@ public class FoodDbFragment extends ListFragment {
         View padding = new View(getActivity());
         padding.setMinimumHeight(150);
         listView.addHeaderView(padding);
+
+        /* -----------------------------------------------------------------------------------------
+         *                                   ON CLICKING A FOOD LISTENER
+         * -----------------------------------------------------------------------------------------
+         */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // view is the toplevel object type defined in the table row xml
-                TableRow foodRow = ((TableRow) view.findViewById(R.id.foodRow));
+                View hiddenView = view.findViewById(R.id.hidden_layout);
+                final int foodid = Integer.parseInt(((TextView) hiddenView.findViewById(R.id.foodPk)).getText().toString());
+
+                View foodRow = view.findViewById(R.id.foodRow);
                 CharSequence name = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
                 CharSequence unit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
                 CharSequence carbs = ((TextView) foodRow.findViewById(R.id.carbs)).getText();
                 CharSequence fat = ((TextView) foodRow.findViewById(R.id.fat)).getText();
                 CharSequence prot = ((TextView) foodRow.findViewById(R.id.protein)).getText();
                 CharSequence cals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
-                CharSequence protcals = ((TextView) foodRow.findViewById(R.id.proteinCalRatio)).getText();
 
-                // Bring up message dialog displaying information
+                // Bring up a dialog for options to delete and/or modify the food
                 if (getActivity() != null) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                    alertDialog.setTitle(name);
-                    alertDialog.setMessage(MessageFormat.format(
-                            "ID: {0}\nFood: {1}\nunit: {2}\ncarbs: {3}\nfat: {4}\nprotein: {5}\ncalories: {6}\nprotein->cal ratio: {7}",
-                            name, unit, carbs, fat, prot, cals, protcals));
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle(name);
+
+                    final CharSequence[] items = {"Delete?"};
+                    final List toDelete = new ArrayList();  // bool flag: empty == false
+                    builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int indexSelected, boolean isSelected) {
+                            if (isSelected)
+                                toDelete.add(1);
+                            else
+                                toDelete.clear();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!toDelete.isEmpty()) {
+                                mDb.delete(FoodDbColumns.TABLE_NAME, FoodDbColumns.ID_COLUMN + "=" + foodid, null);
+                                refreshList();
+                                mListener.onFoodDelete(foodid);  // reflect changes back to fooddb
+                            } else {
+                                // TODO perform modifications if input. Change protein-calorie ratio
+                                // TODO if protein or calories were changed. reflect changes as well
+                            }
+                        }
+                    });
+
                     alertDialog.show();
                 }
             }
@@ -145,32 +176,75 @@ public class FoodDbFragment extends ListFragment {
 
 
         /* -----------------------------------------------------------------------------------------
-         *                                     BUTTON CONFIG
+         *                                     ADD BUTTON CONFIG
          * -----------------------------------------------------------------------------------------
          */
-
-        // Doubtful if a refresh is needed
-//        FloatingActionButton refresh = (FloatingActionButton) getView().findViewById(R.id.refresh);
-//        refresh.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // make adaptor
-//                mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM foods;", null));
-//                mAdapter.notifyDataSetChanged();
-//            }
-//        });
 
         FloatingActionButton addButton = (FloatingActionButton) getView().findViewById(R.id.add);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO open a dialogue for adding custom food
+                // open a dialogue for adding custom food
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                final View diaView = getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_add_fooddb, null);
+                final AlertDialog dia = builder.setView(diaView)
+                        .setTitle("Add a new food to the food list")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .create();
+
+                dia.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        dia.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // Check if any text fields are empty
+                                String name = ((EditText)diaView.findViewById(R.id.name_add)).getText().toString();
+                                String unit = ((EditText)diaView.findViewById(R.id.unit_type_add)).getText().toString();
+                                String carbStr = ((EditText)diaView.findViewById(R.id.carb_add)).getText().toString();
+                                String fatStr = ((EditText)diaView.findViewById(R.id.fat_add)).getText().toString();
+                                String proteinStr = ((EditText)diaView.findViewById(R.id.protein_add)).getText().toString();
+                                String calsStr = ((EditText)diaView.findViewById(R.id.calorie_add)).getText().toString();
+
+                                // Retrieve values from input and add food to db only if ALL input
+                                // fields are filled in, then close dialog
+                                if (name.trim().length() == 0 || unit.trim().length() == 0 ||
+                                        carbStr.trim().length() == 0 || fatStr.trim().length() == 0 ||
+                                        proteinStr.trim().length() == 0 || calsStr.trim().length() == 0) {
+                                    // TODO give a quick warning, but not a popup
+                                } else {
+                                    ContentValues cv = new ContentValues();
+                                    cv.put(FoodDbColumns.FOOD_NAME_COLUMN, name);
+                                    cv.put(FoodDbColumns.UNIT_COLUMN, unit);
+                                    cv.put(FoodDbColumns.CARBS_COLUMN, Double.parseDouble(carbStr));
+                                    cv.put(FoodDbColumns.FAT_COLUMN, Double.parseDouble(fatStr));
+                                    cv.put(FoodDbColumns.PROTEIN_COLUMN, Double.parseDouble(proteinStr));
+                                    cv.put(FoodDbColumns.CALS_COLUMN, Double.parseDouble(calsStr));
+                                    cv.put(FoodDbColumns.RATIO_COLUMN,
+                                            Double.parseDouble(proteinStr) * 4 / Double.parseDouble(calsStr));
+                                    mDb.insert(FoodDbColumns.TABLE_NAME, null, cv);
+                                    refreshList();
+                                    dia.dismiss();
+                                }
+                            }
+                        });
+                    }
+                });
+
+                dia.show();
             }
         });
     }
 
+    // Refresh the food database display
+    private void refreshList() {
+        mAdapter.changeCursor(mDb.rawQuery("SELECT * FROM " + FoodDbColumns.TABLE_NAME + " ORDER BY " +
+                FoodDbColumns.FOOD_NAME_COLUMN + " COLLATE NOCASE;", null));
+        mAdapter.notifyDataSetChanged();
+    }
 
-        @Override
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFoodDbFragmentInteractionListener) {
@@ -183,8 +257,8 @@ public class FoodDbFragment extends ListFragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         mListener = null;
+        super.onDetach();
         mCursor.close();
     }
 
@@ -204,6 +278,6 @@ public class FoodDbFragment extends ListFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFoodDbFragmentInteractionListener {
-        void onFoodDbFragmentInteraction(Uri uri);
+        void onFoodDelete(int id);
     }
 }
