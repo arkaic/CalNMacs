@@ -19,7 +19,7 @@ import org.arkaic.calnmacs.MainFragment.OnMainFragmentInteractionListener;
 public class MainActivity extends AppCompatActivity
         implements OnFoodDbFragmentInteractionListener, OnMainFragmentInteractionListener {
 
-    static final int DUMMY_NUM_ITEMS = 2;
+    static final int NUM_ITEMS = 2;
     private SQLiteDatabase mDb;
     private ViewPager mPager;
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public int getCount() {
-            return mCount;
+            return NUM_ITEMS;
         }
 
         @Override
