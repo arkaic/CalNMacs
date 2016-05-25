@@ -363,21 +363,31 @@ public class MainFragment extends ListFragment {
         void onMainFragmentInteraction(Uri uri);
     }
 
+    /**
+     * Called from MainActivity when FoodDbFragment needs to signal this Fragment to update the
+     * list of foods eaten after a food has been deleted from the database
+     */
     public void deleteFoodById(int id) {
+        List<Integer> indicesToDelete = new ArrayList<>();
         int i = 0;
-        List indicesToDelete = new ArrayList();
+
+        // Track the index of the food if exists in main page's list of eaten foods and update totals
         for (Food food : mFoodsEaten) {
             if (food.id() == id) {
                 mTotalCals -= food.calories();
                 mTotalProtein -= food.protein();
                 mTotalCarbs -= food.carbs();
                 mTotalFat -= food.fat();
-                mFoodsEaten.remove(i);
-                mAdapter.notifyDataSetChanged();
-                ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
+                indicesToDelete.add(0, i);  // stack indices
             }
             i++;
         }
+
+        // Now remove foods backwards
+        for (int index : indicesToDelete)
+            mFoodsEaten.remove(index);
+        mAdapter.notifyDataSetChanged();
+        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
     }
 
     private Spanned totalsSpannedString() {

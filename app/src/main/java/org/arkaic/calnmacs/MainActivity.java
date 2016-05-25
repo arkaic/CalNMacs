@@ -54,9 +54,8 @@ public class MainActivity extends AppCompatActivity
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        private Fragment mMainFrag;
-        private Fragment mFoodDbFrag;
         private ViewPager mPager;
+        private int mCount = 0;
 
         public MyFragmentPagerAdapter(FragmentManager fm, ViewPager pager) {
             super(fm);
@@ -65,12 +64,15 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public int getCount() {
-            return DUMMY_NUM_ITEMS;
+            return mCount;
         }
 
         @Override
         public Fragment getItem(int position) {
-            // Called when adapter needs a fragment that doesn't exist in the FragmentManager
+            // Called when adapter needs a fragment that doesn't exist in the FragmentManager.
+            // Should NOT be touched. As it stands, this is only called on app startup when all
+            // fragments are being created
+            mCount++;
             switch(position) {
                 case 0:  return MainFragment.newInstance(position);
                 case 1:  return FoodDbFragment.newInstance(position);
@@ -78,24 +80,22 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        /**
+         *  When fragments need to communicate, this will be called. First, Fragment A notifies this
+         *  MainActivity instance through the interface implementation. Then the activity instance
+         *  shall call this function to retrieve the fragment to notify.
+         *  position = 0 for MainFragment
+         *  position = 1 for FoodDbFragment
+         */
         public Fragment getFragment(int position) {
             return getSupportFragmentManager().findFragmentByTag(makeFragmentName(mPager.getId(), position));
         }
 
-        // It's the same as the private function in the super class
+        // It's the same as the private function in the super class, implying that the fragment's
+        // name (tag) already exists
         private String makeFragmentName(int viewId, int index) {
             return "android:switcher:" + viewId + ":" + index;
         }
-
-//        @Override
-//        public Object instantiateItem(ViewGroup container, int position) {
-//            Object frag = super.instantiateItem(container, position);
-//            if (position == 0)
-//                mMainFrag = (Fragment)frag;
-//            else if (position == 1)
-//                mFoodDbFrag = (Fragment)frag;
-//            return frag;
-//        }
     }
 
 }
