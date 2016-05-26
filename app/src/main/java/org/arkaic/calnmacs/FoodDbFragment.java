@@ -22,8 +22,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 
@@ -133,12 +132,12 @@ public class FoodDbFragment extends ListFragment {
 
                     // Retrieve the food infos
                     View foodRow = view.findViewById(R.id.foodRow);
-                    CharSequence originalName = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
-                    CharSequence originalUnit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
-                    CharSequence originalCarbs = ((TextView) foodRow.findViewById(R.id.carbs)).getText();
-                    CharSequence originalFat = ((TextView) foodRow.findViewById(R.id.fat)).getText();
-                    CharSequence originalProt = ((TextView) foodRow.findViewById(R.id.protein)).getText();
-                    CharSequence originalCals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
+                    final CharSequence originalName = ((TextView) foodRow.findViewById(R.id.foodName)).getText();
+                    final CharSequence originalUnit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
+                    final CharSequence originalCarbs = ((TextView) foodRow.findViewById(R.id.carbs)).getText();
+                    final CharSequence originalFat = ((TextView) foodRow.findViewById(R.id.fat)).getText();
+                    final CharSequence originalProt = ((TextView) foodRow.findViewById(R.id.protein)).getText();
+                    final CharSequence originalCals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -146,12 +145,19 @@ public class FoodDbFragment extends ListFragment {
                     builder.setView(dialogView);
                     builder.setTitle(originalName);
 
-                    ((TextView)dialogView.findViewById(R.id.name_mod)).setHint("Name: " + originalName);
-                    ((TextView)dialogView.findViewById(R.id.unit_type_mod)).setHint("Unit type: " + originalUnit);
-                    ((TextView)dialogView.findViewById(R.id.carb_mod)).setHint("Carbs: " + originalCarbs);
-                    ((TextView)dialogView.findViewById(R.id.fat_mod)).setHint("Fat: " + originalFat);
-                    ((TextView)dialogView.findViewById(R.id.protein_mod)).setHint("Protein: " + originalProt);
-                    ((TextView)dialogView.findViewById(R.id.calorie_mod)).setHint("Calories: " + originalCals);
+                    final EditText nameEdit = ((EditText)dialogView.findViewById(R.id.name_mod));
+                    final EditText unitEdit = ((EditText)dialogView.findViewById(R.id.unit_type_mod));
+                    final EditText carbEdit = ((EditText) dialogView.findViewById(R.id.carb_mod));
+                    final EditText fatEdit = ((EditText) dialogView.findViewById(R.id.fat_mod));
+                    final EditText proteinEdit = ((EditText) dialogView.findViewById(R.id.protein_mod));
+                    final EditText calEdit = ((EditText) dialogView.findViewById(R.id.calorie_mod));
+
+                    nameEdit.setHint("Name: " + originalName);
+                    unitEdit.setHint("Unit type: " + originalUnit);
+                    carbEdit.setHint("Carbs: " + originalCarbs);
+                    fatEdit.setHint("Fat: " + originalFat);
+                    proteinEdit.setHint("Protein: " + originalProt);
+                    calEdit.setHint("Calories: " + originalCals);
 
                     AlertDialog alertDialog = builder.create();
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
@@ -161,11 +167,36 @@ public class FoodDbFragment extends ListFragment {
                                 mDb.delete(FoodDbColumns.TABLE_NAME, FoodDbColumns.ID_COLUMN + "=" + foodid, null);
                                 refreshList();
                                 mFragmentListener.onFoodDelete(foodid);  // reflect changes back to fooddb
+                                // todo indicator of deletion
                             } else {
                                 // TODO perform modifications if input. Change protein-calorie ratio
+                                if (isInputDifferent()) {
+                                    // TODO update food in database
+                                    refreshList();
+                                    // mFragmentListener.onFoodModify(foodid);
+                                    // TODO indicator of modification
+                                }
 
-                                // TODO if protein or calories were changed. reflect changes as well
                             }
+                        }
+
+                        private boolean isInputDifferent() {
+                            String newName = nameEdit.getText().toString();
+                            String newUnit = unitEdit.getText().toString();
+                            String newCarbs = carbEdit.getText().toString();
+                            String newFat = fatEdit.getText().toString();
+                            String newProtein = proteinEdit.getText().toString();
+                            String newCals = calEdit.getText().toString();
+                            // if input is not empty and not the same as original, change
+                            if (!Objects.equals(newName, "") && !Objects.equals(newName, originalName) ||
+                                    !Objects.equals(newUnit, "") && !Objects.equals(newUnit, originalUnit) ||
+                                    !Objects.equals(newCarbs, "") && !Objects.equals(newCarbs, originalCarbs) ||
+                                    !Objects.equals(newFat, "") && !Objects.equals(newFat, originalFat) ||
+                                    !Objects.equals(newProtein, "") && !Objects.equals(newProtein, originalProt) ||
+                                    !Objects.equals(newCals, "") && !Objects.equals(newCals, originalCals)) {
+                                return true;
+                            }
+                            return false;
                         }
                     });
 
