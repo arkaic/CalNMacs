@@ -7,7 +7,7 @@
     android:background="#ffffff">
 
     <!--Need to keep track of database id of food in this row-->
-    <LinearLayout android:id="@+id/hidden_layout"
+    <LinearLayout android:id="@+id/hidden_fooddb_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

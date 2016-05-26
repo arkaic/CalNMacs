@@ -220,7 +220,7 @@ public class MainFragment extends ListFragment {
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                             getActivity(), android.R.layout.simple_list_item_1, foodNames);
 
-                    // Listview of foods config
+                    // Listview of foods cig
                     final ListView lv = (ListView) (dialogView.findViewById(android.R.id.list));
                     lv.setAdapter(adapter);
                     lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -360,7 +360,7 @@ public class MainFragment extends ListFragment {
                 mTotalProtein -= food.protein();
                 mTotalCarbs -= food.carbs();
                 mTotalFat -= food.fat();
-                indicesToDelete.add(0, i);  // stack indices
+                indicesToDelete.add(0, i);  // *push* the index into list
             }
             i++;
         }
@@ -368,6 +368,7 @@ public class MainFragment extends ListFragment {
         // Now remove foods backwards
         for (int index : indicesToDelete)
             mFoodsEaten.remove(index);
+
         mAdapter.notifyDataSetChanged();
         ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
     }

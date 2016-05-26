@@ -10,11 +10,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import org.arkaic.calnmacs.MainFragment.MainFragmentListener;
 import org.arkaic.calnmacs.FoodDbFragment.FoodDbFragmentListener;
+import org.arkaic.calnmacs.MainFragment.MainFragmentListener;
 
 
-public class MainActivity extends AppCompatActivity implements FoodDbFragmentListener, MainFragmentListener {
+public class MainActivity extends AppCompatActivity
+        implements FoodDbFragmentListener, MainFragmentListener {
 
     static final int NUM_ITEMS = 2;
     private SQLiteDatabase mDb;
