@@ -48,7 +48,7 @@ public class MainListAdapter extends ArrayAdapter<Food> {
             carbsView.setText(Integer.toString(item.carbs()) + "g");
             proteinView.setText(Integer.toString(item.protein()) + "g");
             calsView.setText(Integer.toString(item.calories()) + " kcals");
-            ratioView.setText(Double.toString(item.proteinToCalRatio()) + "%");
+            ratioView.setText(item.proteinToCalRatio() + "%");
         }
         return v;
     }

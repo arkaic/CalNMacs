@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.Cursor;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
@@ -72,7 +73,7 @@ public class Food implements Serializable {
     public int id() { return mId; }
     public String name() {return mName; }
     public String unit() {return mUnit; }
-    public double proteinToCalRatio() {return Math.floor(mProteinRatio * 1e4) / 1e4 * 100; }
+    public String proteinToCalRatio() { return new DecimalFormat("#.##").format(mProteinRatio * 100); }
 
     @Override
     public String toString() {
