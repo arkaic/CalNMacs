@@ -18,15 +18,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 
@@ -45,7 +42,7 @@ import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnMainFragmentInteractionListener} interface
+ * {@link MainFragmentListener} interface
  * to handle interaction events.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -54,7 +51,7 @@ public class MainFragment extends ListFragment {
 
     private MainListAdapter mAdapter;
     private SQLiteDatabase mDb;
-    private OnMainFragmentInteractionListener mListener;
+    private MainFragmentListener mListener;
     private List<Food> mFoodsEaten = new ArrayList<>();
     private String mSelectedSpinnerFood = null;
     private double mTotalCals = 0;
@@ -335,10 +332,10 @@ public class MainFragment extends ListFragment {
     public void onAttach(Context context) {
         // before oncreate
         super.onAttach(context);
-        if (context instanceof OnMainFragmentInteractionListener) {
-            mListener = (OnMainFragmentInteractionListener) context;
+        if (context instanceof MainFragmentListener) {
+            mListener = (MainFragmentListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnMainFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + " must implement MainFragmentListener");
         }
     }
 
@@ -346,21 +343,6 @@ public class MainFragment extends ListFragment {
     public void onDetach() {
         mListener = null;
         super.onDetach();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnMainFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onMainFragmentInteraction(Uri uri);
     }
 
     /**
@@ -401,5 +383,17 @@ public class MainFragment extends ListFragment {
                 "<font color=#{6}>{7}g</font>",
                 calColor, mTotalCals, fatColor, mTotalFat, carbColor, mTotalCarbs, proteinColor, mTotalProtein);
         return Html.fromHtml(retVal);
+    }
+
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface MainFragmentListener {
+        // TODO: If needed to be used, change method(s) signature to whatever I want it to be
+        void onMainFragmentInteraction(Uri uri);
     }
 }

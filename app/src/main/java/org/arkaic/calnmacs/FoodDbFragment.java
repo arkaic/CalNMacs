@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
@@ -20,21 +19,18 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
-import org.w3c.dom.Text;
 
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnFoodDbFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link FoodDbFragmentListener}
  * interface.
  */
 public class FoodDbFragment extends ListFragment {
@@ -44,7 +40,7 @@ public class FoodDbFragment extends ListFragment {
     private SimpleCursorAdapter mAdapter;
     private Cursor mCursor;
     private SQLiteDatabase mDb;
-    private OnFoodDbFragmentInteractionListener mListener;
+    private FoodDbFragmentListener mListener;
 
     public FoodDbFragment() {}
 
@@ -247,11 +243,11 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFoodDbFragmentInteractionListener) {
-            mListener = (OnFoodDbFragmentInteractionListener) context;
+        if (context instanceof FoodDbFragmentListener) {
+            mListener = (FoodDbFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFoodDbFragmentInteractionListener");
+                    + " must implement FoodDbFragmentListener");
         }
     }
 
@@ -277,7 +273,7 @@ public class FoodDbFragment extends ListFragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFoodDbFragmentInteractionListener {
+    public interface FoodDbFragmentListener {
         void onFoodDelete(int id);
     }
 }

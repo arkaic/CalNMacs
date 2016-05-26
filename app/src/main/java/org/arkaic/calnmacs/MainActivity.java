@@ -1,6 +1,5 @@
 package org.arkaic.calnmacs;
 
-import android.app.ListFragment;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,14 +9,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.ViewGroup;
 
-import org.arkaic.calnmacs.FoodDbFragment.OnFoodDbFragmentInteractionListener;
-import org.arkaic.calnmacs.MainFragment.OnMainFragmentInteractionListener;
+import org.arkaic.calnmacs.MainFragment.MainFragmentListener;
+import org.arkaic.calnmacs.FoodDbFragment.FoodDbFragmentListener;
 
 
-public class MainActivity extends AppCompatActivity
-        implements OnFoodDbFragmentInteractionListener, OnMainFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements FoodDbFragmentListener, MainFragmentListener {
 
     static final int NUM_ITEMS = 2;
     private SQLiteDatabase mDb;
