@@ -23,3 +23,4 @@ I will prepopulate the database with my own foods for now, but in the future, I 
 ## FUTURE FEATURES
 * Ability switch unit types for foods in the foods eaten list.
 * A sidepage which displays your target calories for the day and the current deficit or surplus.
+* Information for each food when choosing for foods eaten
