@@ -24,6 +24,11 @@ public class Food implements Serializable {
     public Food(String foodName, int amount, SQLiteDatabase db) {
         mName = foodName;
         mAmount = amount;
+        updateFromDb(db);
+    }
+
+    /* Fill in details of food using query from db */
+    public void updateFromDb(SQLiteDatabase db) {
         String query = "SELECT * FROM "+FoodDbColumns.TABLE_NAME+" WHERE "+FoodDbColumns.FOOD_NAME_COLUMN+"=?";
         Cursor cursor = db.rawQuery(query, new String[] {mName});
         if (cursor.moveToFirst()) {
@@ -32,23 +37,30 @@ public class Food implements Serializable {
                 String item = cursor.getString(i);
                 switch (column) {
                     case FoodDbColumns.ID_COLUMN:
-                        mId = Integer.parseInt(item); break;
+                        mId = Integer.parseInt(item);
+                        break;
                     case FoodDbColumns.UNIT_COLUMN:
-                        mUnit = item; break;
+                        mUnit = item;
+                        break;
                     case FoodDbColumns.RATIO_COLUMN:
-                        mProteinRatio = Double.parseDouble(item); break;
+                        mProteinRatio = Double.parseDouble(item);
+                        break;
                     case FoodDbColumns.PROTEIN_COLUMN:
-                        mProtein = Double.parseDouble(item); break;
+                        mProtein = Double.parseDouble(item);
+                        break;
                     case FoodDbColumns.FAT_COLUMN:
-                        mFat = Double.parseDouble(item); break;
+                        mFat = Double.parseDouble(item);
+                        break;
                     case FoodDbColumns.CARBS_COLUMN:
-                        mCarbs = Double.parseDouble(item); break;
+                        mCarbs = Double.parseDouble(item);
+                        break;
                     case FoodDbColumns.CALS_COLUMN:
-                        mCals = Double.parseDouble(item); break;
+                        mCals = Double.parseDouble(item);
+                        break;
                 }
             }
         } else {
-            // TODO should throw an exception here
+            // TODO exception?
         }
     }
 
