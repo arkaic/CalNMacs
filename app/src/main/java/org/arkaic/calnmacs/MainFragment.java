@@ -27,6 +27,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 
+import junit.framework.Assert;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -167,6 +169,7 @@ public class MainFragment extends ListFragment {
                                 mTotalProtein += selectedFood.protein();
                                 mTotalCarbs += selectedFood.carbs();
                                 mTotalFat += selectedFood.fat();
+                                assertTotals();
                                 mAdapter.notifyDataSetChanged();
                                 toolbar.setTitle(totalsSpannedString());
                             }
@@ -180,6 +183,7 @@ public class MainFragment extends ListFragment {
                             mTotalCarbs -= selectedFood.carbs();
                             mTotalFat -= selectedFood.fat();
                             mFoodsEaten.remove(index);
+                            assertTotals();
                             mAdapter.notifyDataSetChanged();
                             toolbar.setTitle(totalsSpannedString());
                         }
@@ -244,11 +248,12 @@ public class MainFragment extends ListFragment {
                                 int amount = picker.getValue();
                                 Food selectedFood = new Food(mSelectedSpinnerFood, amount, mDb);
                                 mFoodsEaten.add(selectedFood);
-                                mAdapter.notifyDataSetChanged();
                                 mTotalCals += selectedFood.calories();
                                 mTotalProtein += selectedFood.protein();
                                 mTotalCarbs += selectedFood.carbs();
                                 mTotalFat += selectedFood.fat();
+                                assertTotals();
+                                mAdapter.notifyDataSetChanged();
                                 toolbar.setTitle(totalsSpannedString());
                                 mSelectedSpinnerFood = null;
                             }
@@ -294,6 +299,7 @@ public class MainFragment extends ListFragment {
                         mTotalFat = 0;
                         mTotalProtein = 0;
                         toolbar.setTitle(totalsSpannedString());
+                        assertTotals();
                         mAdapter.notifyDataSetChanged();
                     }
                 });
@@ -368,8 +374,49 @@ public class MainFragment extends ListFragment {
         for (int index : indicesToDelete)
             mFoodsEaten.remove(index);
 
+        assertTotals();
+
         mAdapter.notifyDataSetChanged();
         ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
+    }
+
+    /**
+     * Same as above but update
+     */
+    public void updateFoodById(int id) {
+        for (Food food : mFoodsEaten) {
+            if (food.id() == id) {
+                mTotalCals -= food.calories();
+                mTotalProtein -= food.protein();
+                mTotalCarbs -= food.carbs();
+                mTotalFat -= food.fat();
+                food.updateFromDb(mDb);
+                mTotalCals += food.calories();
+                mTotalProtein += food.protein();
+                mTotalCarbs += food.carbs();
+                mTotalFat += food.fat();
+            }
+        }
+        assertTotals();
+
+        mAdapter.notifyDataSetChanged();
+        ((Toolbar)getActivity().findViewById(R.id.main_toolbar)).setTitle(totalsSpannedString());
+    }
+
+    private void assertTotals() {
+        double checkCals, checkProtein, checkCarbs, checkFat;
+        checkCals = checkProtein = checkCarbs = checkFat = 0;
+        for (Food food : mFoodsEaten) {
+            checkCals += food.calories();
+            checkProtein += food.protein();
+            checkCarbs += food.carbs();
+            checkFat += food.fat();
+        }
+
+        Assert.assertEquals(mTotalCals, checkCals);
+        Assert.assertEquals(mTotalCarbs, checkCarbs);
+        Assert.assertEquals(mTotalProtein, checkProtein);
+        Assert.assertEquals(mTotalFat, checkFat);
     }
 
     private Spanned totalsSpannedString() {

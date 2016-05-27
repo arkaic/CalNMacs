@@ -45,6 +45,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onFoodUpdate(int id) {
+        MainFragment mainFragment = (MainFragment)(((MyFragmentPagerAdapter)mPager.getAdapter()).getFragment(0));
+        if (mainFragment != null)
+            mainFragment.updateFoodById(id);
+        else
+            Log.w("**** MY LOGS ****", "mainFragment is null!");
+    }
+
+    @Override
     public void onMainFragmentInteraction(Uri uri) {
         // only needed if calories page needs to tell food list somehting
     }

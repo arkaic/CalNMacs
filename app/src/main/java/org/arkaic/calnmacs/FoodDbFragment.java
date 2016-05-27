@@ -136,7 +136,7 @@ public class FoodDbFragment extends ListFragment {
                     final CharSequence originalUnit = ((TextView) foodRow.findViewById(R.id.unit)).getText();
                     final CharSequence originalCarbs = ((TextView) foodRow.findViewById(R.id.carbs)).getText();
                     final CharSequence originalFat = ((TextView) foodRow.findViewById(R.id.fat)).getText();
-                    final CharSequence originalProt = ((TextView) foodRow.findViewById(R.id.protein)).getText();
+                    final CharSequence originalProtein = ((TextView) foodRow.findViewById(R.id.protein)).getText();
                     final CharSequence originalCals = ((TextView) foodRow.findViewById(R.id.cals)).getText();
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -156,7 +156,7 @@ public class FoodDbFragment extends ListFragment {
                     unitEdit.setHint("Unit type: " + originalUnit);
                     carbEdit.setHint("Carbs: " + originalCarbs);
                     fatEdit.setHint("Fat: " + originalFat);
-                    proteinEdit.setHint("Protein: " + originalProt);
+                    proteinEdit.setHint("Protein: " + originalProtein);
                     calEdit.setHint("Calories: " + originalCals);
 
                     AlertDialog alertDialog = builder.create();
@@ -169,16 +169,43 @@ public class FoodDbFragment extends ListFragment {
                                 mFragmentListener.onFoodDelete(foodid);  // reflect changes back to fooddb
                                 // todo indicator of deletion
                             } else {
-                                // TODO perform modifications if input. Change protein-calorie ratio
+                                // update food in db if input differs
                                 if (isInputDifferent()) {
-                                    // TODO update food in database
+                                    updateFoodInDb();
                                     refreshList();
-                                    // mFragmentListener.onFoodModify(foodid);
+                                     mFragmentListener.onFoodUpdate(foodid);
                                     // TODO indicator of modification
                                 }
-
                             }
                         }
+
+                        private void updateFoodInDb() {
+                            String newName = nameEdit.getText().toString();
+                            String newUnit = unitEdit.getText().toString();
+                            String newCarbs = carbEdit.getText().toString();
+                            String newFat = fatEdit.getText().toString();
+                            String newProtein = proteinEdit.getText().toString();
+                            String newCals = calEdit.getText().toString();
+
+                            newName = Objects.equals(newName, "") ? originalName.toString() : newName;
+                            newUnit = Objects.equals(newUnit, "") ? originalUnit.toString() : newUnit;
+                            newCarbs = Objects.equals(newCarbs, "") ? originalCarbs.toString() : newCarbs;
+                            newFat = Objects.equals(newFat, "") ? originalFat.toString() : newFat;
+                            newProtein = Objects.equals(newProtein, "") ? originalProtein.toString() : newProtein;
+                            newCals = Objects.equals(newCals, "") ? originalCals.toString() : newCals;
+
+                            ContentValues cv = new ContentValues();
+                            cv.put(FoodDbColumns.FOOD_NAME_COLUMN, newName);
+                            cv.put(FoodDbColumns.UNIT_COLUMN, newUnit);
+                            cv.put(FoodDbColumns.CARBS_COLUMN, newCarbs);
+                            cv.put(FoodDbColumns.FAT_COLUMN, newFat);
+                            cv.put(FoodDbColumns.PROTEIN_COLUMN, newProtein);
+                            cv.put(FoodDbColumns.CALS_COLUMN, newCals);
+                            cv.put(FoodDbColumns.RATIO_COLUMN,
+                                    Double.parseDouble(newProtein) * 4 / Double.parseDouble(newCals));
+                            mDb.update(FoodDbColumns.TABLE_NAME, cv, FoodDbColumns.ID_COLUMN + "=" + foodid, null);
+                        }
+
 
                         private boolean isInputDifferent() {
                             String newName = nameEdit.getText().toString();
@@ -192,7 +219,7 @@ public class FoodDbFragment extends ListFragment {
                                     !Objects.equals(newUnit, "") && !Objects.equals(newUnit, originalUnit) ||
                                     !Objects.equals(newCarbs, "") && !Objects.equals(newCarbs, originalCarbs) ||
                                     !Objects.equals(newFat, "") && !Objects.equals(newFat, originalFat) ||
-                                    !Objects.equals(newProtein, "") && !Objects.equals(newProtein, originalProt) ||
+                                    !Objects.equals(newProtein, "") && !Objects.equals(newProtein, originalProtein) ||
                                     !Objects.equals(newCals, "") && !Objects.equals(newCals, originalCals)) {
                                 return true;
                             }
@@ -309,5 +336,6 @@ public class FoodDbFragment extends ListFragment {
      */
     public interface FoodDbFragmentListener {
         void onFoodDelete(int id);
+        void onFoodUpdate(int id);
     }
 }
