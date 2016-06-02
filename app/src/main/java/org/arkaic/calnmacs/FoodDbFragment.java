@@ -73,7 +73,7 @@ public class FoodDbFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, final Bundle savedInstanceState) {
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
-        toolbar.setTitle("Food Unit    Carb    Fat    Protein   Cal     Ratio");
+        toolbar.setTitle("Food Unit    Fat     Carb   Protein   Cal     Ratio");
         toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
