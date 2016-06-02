@@ -10,8 +10,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +25,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 import org.arkaic.calnmacs.FoodDbContract.FoodDbColumns;
@@ -74,6 +78,7 @@ public class FoodDbFragment extends ListFragment {
     public void onViewCreated(View view, final Bundle savedInstanceState) {
         final Toolbar toolbar = (Toolbar)getActivity().findViewById(R.id.fooddb_toolbar);
         toolbar.setTitle("Food Unit    Fat     Carb   Protein   Cal     Ratio");
+        toolbar.setTitle(toolbarSpannedString());
         toolbar.setTitleTextColor(Color.WHITE);
 
         /* -----------------------------------------------------------------------------------------
@@ -293,6 +298,15 @@ public class FoodDbFragment extends ListFragment {
                 dia.show();
             }
         });
+    }
+
+    private Spanned toolbarSpannedString() {
+        String fatColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.fat_color) & 0x00ffffff);
+        String carbColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.carb_color) & 0x00ffffff);
+        String proteinColor = Integer.toHexString(ContextCompat.getColor(getContext(), R.color.protein_color) & 0x00ffffff);
+        String s = MessageFormat.format("Food&nbsp;Unit&nbsp;&nbsp;&nbsp;<font color=#{0}>Fat</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=#{1}>Carb</font>&nbsp;&nbsp;<font color=#{2}>Protein</font>&nbsp;Cal&nbsp;&nbsp;&nbsp;Ratio",
+                fatColor, carbColor, proteinColor);
+        return Html.fromHtml(s);
     }
 
     // Refresh the food database display
