@@ -285,27 +285,26 @@ public class MainFragment extends ListFragment {
             public void onClick(View view) {
                 // Create dialog box
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                View dialogView = getLayoutInflater(savedInstanceState).inflate(android.R.layout.select_dialog_item, null);
-                dialogBuilder.setView(dialogView);
-                dialogBuilder.setTitle("Clear all?");
-
-                // OK button config
-                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mFoodsEaten.clear();
-                        mTotalCals = 0;
-                        mTotalCarbs = 0;
-                        mTotalFat = 0;
-                        mTotalProtein = 0;
-                        toolbar.setTitle(totalsSpannedString());
-                        assertTotals();
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                dialogBuilder.setView(getLayoutInflater(savedInstanceState).inflate(R.layout.dialog_clear_main, null))
+                    .setTitle("Clear all?")
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFoodsEaten.clear();
+                            mTotalCals = 0;
+                            mTotalCarbs = 0;
+                            mTotalFat = 0;
+                            mTotalProtein = 0;
+                            toolbar.setTitle(totalsSpannedString());
+                            assertTotals();
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
 
                 AlertDialog dialog = dialogBuilder.create();
                 dialog.show();
+                dialog.getWindow().setLayout(700, 350);  // resize dialog to be smaller
             }
         });
     }

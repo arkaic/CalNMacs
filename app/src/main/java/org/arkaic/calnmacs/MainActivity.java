@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         mPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), mPager));
     }
 
-    @Override
+    @Override  /** FoodDbFragmentListener */
     public void onFoodDelete(int id) {
         MainFragment mainFragment = (MainFragment)(((MyFragmentPagerAdapter)mPager.getAdapter()).getFragment(0));
         if (mainFragment != null)
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
             Log.w("**** MY LOGS ****", "mainFragment is null!");
     }
 
-    @Override
+    @Override  /** FoodDbFragmentListener */
     public void onFoodUpdate(int id) {
         MainFragment mainFragment = (MainFragment)(((MyFragmentPagerAdapter)mPager.getAdapter()).getFragment(0));
         if (mainFragment != null)
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
             Log.w("**** MY LOGS ****", "mainFragment is null!");
     }
 
-    @Override
+    @Override  /** MainFragmentListener */
     public void onMainFragmentInteraction(Uri uri) {
         // only needed if calories page needs to tell food list somehting
     }
